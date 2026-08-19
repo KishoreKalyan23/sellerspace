@@ -1,0 +1,30 @@
+D:\test project
+├── ECommerce.sln
+├── PROJECT_LOG.md
+├── .vscode/
+│   └── extensions.json
+├── backend/
+│   ├── ECommerce.API/
+│   │   ├── appsettings.json
+│   │   ├── appsettings.Development.json
+│   │   ├── ECommerce.API.csproj
+│   │   ├── Program.cs
+│   │   ├── Controllers/
+│   │   ├── Extensions/
+│   │   ├── Middleware/
+│   │   └── Models/
+│   ├── ECommerce.Application/
+│   │   ├── DTOs/
+│   │   ├── Interfaces/
+│   │   ├── Queries/
+│   │   └── ECommerce.Application.csproj
+│   ├── ECommerce.Domain/
+│   │   ├── Entities/
+│   │   └── ECommerce.Domain.csproj
+│   └── ECommerce.Infrastructure/
+│       ├── Configurations/
+│       ├── Repositories/
+│       ├── Services/
+│       ├── ECommerce.Infrastructure.csproj
+│       └── ECommerceDbContext.cs
+└── ecommerce-store/   (left untouched)

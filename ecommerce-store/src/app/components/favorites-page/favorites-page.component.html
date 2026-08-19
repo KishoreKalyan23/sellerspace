@@ -1,0 +1,33 @@
+<section class="favorites-shell">
+  <div class="favorites-header">
+    <div>
+      <h2>{{ userService.getCurrentUser()?.name || 'Your' }}'s favorites</h2>
+      <p class="preference-copy">
+        Preferences: {{ userService.getPreferredCategories().join(', ') || 'No preferences yet' }}
+      </p>
+    </div>
+  </div>
+
+  @if (favorites.length) {
+    <div class="favorites-grid">
+      @for (product of favorites; track product.id) {
+        <article class="favorite-card" [routerLink]="['/products', product.id]">
+          <div class="favorite-media">{{ product.image }}</div>
+          <div class="favorite-copy">
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}</p>
+            <div class="favorite-footer">
+              <span class="price">${{ product.price }}</span>
+              <span class="badge">{{ product.badge }}</span>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>No favorites yet.</p>
+      <span>Tap the heart on a product to save it here.</span>
+    </div>
+  }
+</section>

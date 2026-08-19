@@ -1,0 +1,44 @@
+:root {
+  --color-bg: #F5F3EF;
+  --color-surface: #FFFFFF;
+  --color-text: #1B1F2A;
+  --color-text-secondary: #5C6270;
+  --color-primary: #1F3A5C;
+  --color-accent: #C08A2E;
+  --color-success: #3F7D58;
+  --color-error: #B3462C;
+
+  --shadow-soft: 0 2px 8px rgba(27, 31, 42, 0.08);
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --border-subtle: rgba(27, 31, 42, 0.08);
+  --font-display: 'Sora', 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+}
+
+.price-tag,
+.stock-tag {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.7rem;
+  border-radius: 4px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.price-tag {
+  background: var(--color-accent);
+  color: #fff;
+  box-shadow: var(--shadow-soft);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 0 0);
+}
+
+.stock-tag {
+  background: transparent;
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%, 0 0);
+}

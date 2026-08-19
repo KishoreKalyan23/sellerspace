@@ -1,0 +1,49 @@
+<section class="app-shell" [class.app-shell--collapsed]="isSidebarCollapsed()">
+  <aside class="app-shell__nav">
+    <div class="sidebar-header">
+      <div class="brand-mark">M</div>
+      <div class="brand-copy" *ngIf="!isSidebarCollapsed()">
+        <span class="eyebrow">Marketplace</span>
+        <strong>Ledger</strong>
+      </div>
+      <button class="collapse-toggle" type="button" (click)="toggleSidebar()" aria-label="Toggle navigation">
+        {{ isSidebarCollapsed() ? '›' : '‹' }}
+      </button>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Sidebar navigation">
+      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+        <span class="nav-icon">◫</span>
+        <span *ngIf="!isSidebarCollapsed()">Overview</span>
+      </a>
+      <a class="nav-item" routerLink="/products" routerLinkActive="active">
+        <span class="nav-icon">◌</span>
+        <span *ngIf="!isSidebarCollapsed()">Products</span>
+      </a>
+      <!-- <a class="nav-item" routerLink="/products/new" routerLinkActive="active">
+        <span class="nav-icon">＋</span>
+        <span *ngIf="!isSidebarCollapsed()">New product</span>
+      </a> -->
+      <a class="nav-item" routerLink="/billing" routerLinkActive="active">
+        <span class="nav-icon">▣</span>
+        <span *ngIf="!isSidebarCollapsed()">Billing</span>
+      </a>
+      <button class="nav-item" type="button" (click)="toggleSettings()" [attr.aria-expanded]="isSettingsOpen()" aria-controls="settings-navigation">
+        <span class="nav-icon">⚙</span>
+        <span *ngIf="!isSidebarCollapsed()">Settings</span>
+        <span *ngIf="!isSidebarCollapsed()" class="nav-disclosure">{{ isSettingsOpen() ? '⌃' : '⌄' }}</span>
+      </button>
+      <div *ngIf="isSettingsOpen() && !isSidebarCollapsed()" id="settings-navigation" class="nav-children">
+        <a class="nav-child" routerLink="/settings/vendor-details" routerLinkActive="active">View details</a>
+      </div>
+      <button class="nav-item nav-button-plain" type="button" (click)="logout()">
+        <span class="nav-icon">↩</span>
+        <span *ngIf="!isSidebarCollapsed()">Log out</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="app-shell__content">
+    <router-outlet />
+  </main>
+</section>

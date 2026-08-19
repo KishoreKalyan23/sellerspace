@@ -1,0 +1,53 @@
+# Build results
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+
+# Visual Studio cache/options
+.vs/
+*.user
+*.userosscache
+*.suo
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code (kept at repo root; ignore local-only files here too)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# NuGet
+*.nupkg
+*.snupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# MSTest / test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# Publish output
+**/Properties/PublishProfiles/*.pubxml.user
+publish/
+PublishScripts/
+
+# ASP.NET Core secrets and local overrides
+appsettings.*.local.json
+secrets.json
+*.pfx
+
+# Rider/JetBrains
+*.DotSettings.user
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

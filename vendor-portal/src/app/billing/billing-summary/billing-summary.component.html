@@ -1,0 +1,40 @@
+<section class="billing-panel" aria-label="Billing summary">
+  <header class="billing-panel__header">
+    <h1>Billing</h1>
+    <span>{{ billingItems().length }} {{ billingItems().length === 1 ? 'item' : 'items' }}</span>
+  </header>
+
+  <div class="billing-panel__body">
+    <div *ngIf="billingItems().length === 0" class="empty-state">
+      <p>No products added yet.</p>
+      <small>Select items from the catalog to start a bill.</small>
+    </div>
+
+    <article *ngFor="let item of billingItems()" class="billing-item">
+      <div class="billing-item__topline">
+        <h2>{{ item.name }}</h2>
+        <button type="button" class="remove-button" (click)="removeItem(item.productId)" [attr.aria-label]="'Remove ' + item.name">×</button>
+      </div>
+      <div class="billing-item__details">
+        <div class="quantity-control">
+          <button type="button" (click)="changeQuantity(item.productId, item.quantity - 1)" aria-label="Decrease quantity">−</button>
+          <input type="number" min="1" [value]="item.quantity" (change)="updateQuantity(item.productId, +$any($event.target).value)" aria-label="Quantity" />
+          <button type="button" (click)="changeQuantity(item.productId, item.quantity + 1)" aria-label="Increase quantity">+</button>
+        </div>
+        <strong>{{ item.price * item.quantity | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+      </div>
+    </article>
+  </div>
+
+  <footer class="billing-panel__footer">
+    <div class="total-row">
+      <span>Subtotal</span>
+      <strong>{{ subtotal() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+    </div>
+    <div class="total-row total-row--final">
+      <span>Total</span>
+      <strong>{{ total() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+    </div>
+    <button class="checkout-button" type="button" [disabled]="billingItems().length === 0">Checkout</button>
+  </footer>
+</section>

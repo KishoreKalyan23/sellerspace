@@ -1,0 +1,73 @@
+@if (product) {
+  <section class="detail-shell">
+    <div class="detail-hero">
+      <div class="detail-media-shell">
+        <div class="detail-media">{{ product.images[activeImageIndex] }}</div>
+        <div class="carousel-controls">
+          <button type="button" class="carousel-btn" (click)="previousImage()" aria-label="Previous image">←</button>
+          <button type="button" class="carousel-btn" (click)="nextImage()" aria-label="Next image">→</button>
+        </div>
+        <div class="thumbnail-row">
+          @for (image of product.images; track image; let index = $index) {
+            <button
+              type="button"
+              class="thumbnail"
+              [class.active]="activeImageIndex === index"
+              (click)="selectImage(index)"
+            >
+              {{ image }}
+            </button>
+          }
+        </div>
+      </div>
+      <div class="detail-copy">
+        <p class="eyebrow">{{ product.category }}</p>
+        <div class="detail-title-row">
+          <h2>{{ product.name }}</h2>
+          <button class="favorite-toggle" type="button" (click)="toggleFavorite()" [attr.aria-pressed]="isFavorite()">
+            {{ isFavorite() ? '♥' : '♡' }}
+          </button>
+        </div>
+        <p class="description">{{ product.description }}</p>
+        <div class="detail-meta">
+          <span class="price">${{ product.price }}</span>
+          <span class="rating">★ {{ product.rating }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <article class="detail-card">
+        <div class="card-title-row">
+          <h3>Product details</h3>
+          <span class="badge">{{ product.badge }}</span>
+        </div>
+        <ul class="info-list">
+          <li><strong>Category:</strong> {{ product.category }}</li>
+          <li><strong>Vendor:</strong> {{ product.vendor }}</li>
+          <li><strong>Price:</strong> ${{ product.price }}</li>
+          <li><strong>Rating:</strong> {{ product.rating }} / 5</li>
+        </ul>
+      </article>
+
+      <article class="detail-card">
+        <div class="card-title-row">
+          <h3>Vendor details</h3>
+          <span class="badge subtle">Local partner</span>
+        </div>
+        <p class="vendor-text">{{ product.vendorNote }}</p>
+        <p class="vendor-address">{{ product.vendorAddress }}</p>
+        <p class="vendor-region">{{ product.vendorRegion }}</p>
+        <div class="map-card" aria-label="Vendor map preview">
+          <div class="map-pin">📍</div>
+          <div>
+            <strong>{{ product.vendor }}</strong>
+            <p>{{ product.vendorRegion }}</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+} @else {
+  <p class="empty-state">The selected product is not available yet.</p>
+}

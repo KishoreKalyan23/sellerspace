@@ -1,0 +1,54 @@
+<section class="catalog-shell">
+  <div class="catalog-header">
+    <div>
+      <p class="eyebrow">Curated picks</p>
+      <h2>Designed for modern living</h2>
+    </div>
+    <p class="summary">{{ service.filteredProducts().length }} products ready for your next arrival</p>
+  </div>
+
+  @if (service.isLoading()) {
+    <div class="card-grid">
+      @for (item of [1, 2, 3, 4]; track item) {
+        <div class="product-card skeleton-card" aria-hidden="true">
+          <div class="skeleton media"></div>
+          <div class="skeleton line short"></div>
+          <div class="skeleton line"></div>
+          <div class="skeleton line short"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="section-stack">
+      @for (category of service.categories(); track category) {
+        @if (category !== 'All') {
+          <section class="category-section">
+            <div class="section-title-row">
+              <h3>{{ category }}</h3>
+              <a href="#" class="section-link">View all</a>
+            </div>
+            <div class="horizontal-row">
+              @for (product of getProductsForCategory(category); track product.id) {
+                <article class="product-card" [routerLink]="['/products', product.id]">
+                  <div class="product-media">{{ product.image }}</div>
+                  <div class="product-meta">
+                    <span class="badge">{{ product.badge }}</span>
+                    <h3>{{ product.name }}</h3>
+                    <p>{{ product.description }}</p>
+                    <div class="product-footer">
+                      <div>
+                        <span class="price">${{ product.price }}</span>
+                        <p class="vendor">{{ product.vendor }}</p>
+                      </div>
+                      <span class="rating">★ {{ product.rating }}</span>
+                    </div>
+                  </div>
+                </article>
+              }
+            </div>
+          </section>
+        }
+      }
+    </div>
+  }
+</section>

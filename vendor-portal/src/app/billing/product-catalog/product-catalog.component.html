@@ -1,0 +1,28 @@
+<section class="catalog-panel" aria-label="Product catalog">
+  <header class="catalog-panel__header">
+    <label class="catalog-search" for="billing-product-search">
+      <span aria-hidden="true">⌕</span>
+      <input id="billing-product-search" type="search" placeholder="Search products" [value]="searchQuery()" (input)="updateSearch($event)" />
+    </label>
+  </header>
+
+  <div class="catalog-panel__body">
+    <div class="product-grid">
+      <article *ngFor="let product of filteredProducts()" class="catalog-card">
+        <img *ngIf="imageUrl(product) as thumbnailUrl" class="catalog-card__image" [src]="thumbnailUrl" [alt]="product.name" />
+        <div *ngIf="!imageUrl(product)" class="catalog-card__placeholder">No image</div>
+        <span class="catalog-card__category">{{ product.category }}</span>
+        <h2>{{ product.name }}</h2>
+        <strong>{{ product.price | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+        <div class="quantity-control">
+          <button type="button" (click)="updateQuantity(product.id, quantityFor(product.id) - 1)" aria-label="Decrease quantity">−</button>
+          <input type="number" min="1" [value]="quantityFor(product.id)" (change)="updateQuantity(product.id, +$any($event.target).value)" aria-label="Quantity" />
+          <button type="button" (click)="updateQuantity(product.id, quantityFor(product.id) + 1)" aria-label="Increase quantity">+</button>
+        </div>
+        <button type="button" class="add-button" (click)="addToBill(product)">Add to bill</button>
+      </article>
+
+      <div *ngIf="filteredProducts().length === 0" class="empty-state">No products match your search.</div>
+    </div>
+  </div>
+</section>

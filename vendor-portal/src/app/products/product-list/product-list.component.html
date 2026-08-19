@@ -1,0 +1,69 @@
+<section class="page-shell">
+  <header class="topbar">
+    <div class="brand-block">
+      <p class="eyebrow">Catalog</p>
+      <h1>Products</h1>
+    </div>
+
+    <div class="product-search">
+      <label class="search-field" for="product-search">
+        <span class="search-icon" aria-hidden="true">⌕</span>
+        <input
+          id="product-search"
+          type="search"
+          placeholder="Search products"
+          [value]="searchQuery()"
+          (input)="updateSearchQuery($event)"
+        />
+      </label>
+    </div>
+
+    <div class="topbar-actions">
+      <span class="chip">Inventory overview</span>
+      <a class="primary-link" routerLink="/products/new">Add product</a>
+    </div>
+  </header>
+
+  <div class="summary-bar">
+    <div class="summary-card">
+      <span class="label">Inventory</span>
+      <strong>{{ totalInventory() }}</strong>
+      <small>Units across all listings</small>
+    </div>
+    <div class="summary-card">
+      <span class="label">Active listings</span>
+      <strong>{{ filteredProducts().length }}</strong>
+      <small>{{ searchQuery() ? 'Matching products' : 'Products in catalog' }}</small>
+    </div>
+  </div>
+
+  <div class="product-results">
+    <div class="product-grid">
+      <article class="product-card" *ngFor="let product of filteredProducts(); trackBy: trackByProductId">
+        <img *ngIf="imageUrl(product) as thumbnailUrl" class="product-thumbnail" [src]="thumbnailUrl" [alt]="product.name" />
+        <div *ngIf="!imageUrl(product)" class="thumbnail-placeholder">No image</div>
+        <div class="product-header">
+          <span class="tag">{{ product.category }}</span>
+          <span class="stock-tag">{{ product.stockQuantity }} in stock</span>
+        </div>
+
+        <div class="product-body">
+          <h2>{{ product.name }}</h2>
+          <p>{{ product.description || 'Premium listing curated for your marketplace.' }}</p>
+        </div>
+
+        <div class="product-footer">
+          <div class="price-tag">₹{{ product.price }}</div>
+          <div class="card-actions">
+            <a class="link-button" [routerLink]="['/products', product.id, 'edit']">Edit</a>
+            <button type="button" class="ghost-button">View</button>
+          </div>
+        </div>
+      </article>
+
+      <div *ngIf="filteredProducts().length === 0" class="empty-state">
+        No products match your search.
+      </div>
+    </div>
+  </div>
+</section>

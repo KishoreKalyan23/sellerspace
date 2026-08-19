@@ -1,0 +1,41 @@
+<div class="page-shell">
+  <header class="hero-bar">
+    <div class="brand-block">
+      <div class="brand-mark">E</div>
+      <div>
+        <p class="eyebrow">Storefront</p>
+        <h1>Everyday essentials</h1>
+      </div>
+    </div>
+
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a routerLink="/" (click)="closeMenu()">Home</a>
+      <a routerLink="/contact-us" (click)="closeMenu()">Contact us</a>
+      <a routerLink="/location" (click)="closeMenu()">Choose your location</a>
+      <a routerLink="/register" (click)="closeMenu()">Register</a>
+    </nav>
+
+    <div class="profile-menu">
+      <button class="profile-pill" type="button" (click)="toggleMenu()" aria-haspopup="true" [attr.aria-expanded]="isMenuOpen">
+        <span class="profile-avatar">{{ userService.getCurrentUser()?.name?.charAt(0) || 'U' }}</span>
+        <span>{{ userService.getCurrentUser()?.name || 'User profile' }}</span>
+      </button>
+      @if (isMenuOpen) {
+        <div class="profile-dropdown">
+          <a routerLink="/favorites" (click)="closeMenu()">
+            <span class="dropdown-icon">♡</span>
+            Favorites
+          </a>
+          <a href="#" (click)="closeMenu()">
+            <span class="dropdown-icon">⚙</span>
+            Settings
+          </a>
+        </div>
+      }
+    </div>
+  </header>
+
+  <main class="page-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

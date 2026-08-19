@@ -1,0 +1,19 @@
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <p class="eyebrow">Browse</p>
+    <h2>Categories</h2>
+  </div>
+
+  <nav class="category-list" aria-label="Product categories">
+    @for (category of categoryList(); track category) {
+      <button
+        type="button"
+        class="category-pill"
+        [class.active]="selectedCategory() === category"
+        (click)="selectCategory(category)"
+      >
+        {{ category }}
+      </button>
+    }
+  </nav>
+</aside>

@@ -1,0 +1,45 @@
+<section class="register-shell">
+  <div class="register-card">
+    <div class="register-header">
+      <div>
+        <p class="eyebrow">Welcome</p>
+        <h2>Create your account</h2>
+      </div>
+      <a class="back-link" routerLink="/">Back</a>
+    </div>
+
+    <form class="register-form" (ngSubmit)="submit()">
+      <label>
+        <span>Full name</span>
+        <input [(ngModel)]="form.name" name="name" required />
+      </label>
+
+      <label>
+        <span>Age</span>
+        <input type="number" [(ngModel)]="form.age" name="age" min="1" required />
+      </label>
+
+      <label>
+        <span>Gender</span>
+        <select [(ngModel)]="form.gender" name="gender">
+          <option>Female</option>
+          <option>Male</option>
+          <option>Non-binary</option>
+          <option>Prefer not to say</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Mobile number</span>
+        <input [(ngModel)]="form.mobileNumber" name="mobileNumber" required />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input type="email" [(ngModel)]="form.email" name="email" required />
+      </label>
+
+      <button type="submit">Register now</button>
+    </form>
+  </div>
+</section>

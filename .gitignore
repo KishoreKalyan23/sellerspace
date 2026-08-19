@@ -1,0 +1,6 @@
+# Visual Studio solution-level cache
+.vs/
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,192 @@
+.detail-shell {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.2rem;
+  border-radius: 1.25rem;
+  background: white;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.detail-hero {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.detail-media-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.detail-media {
+  display: grid;
+  place-items: center;
+  min-height: 220px;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #f8fafc, #eef2ff);
+  font-size: 3rem;
+}
+
+.carousel-controls {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.carousel-btn {
+  border: 0;
+  border-radius: 999px;
+  background: #0f172a;
+  color: white;
+  width: 2.2rem;
+  height: 2.2rem;
+  cursor: pointer;
+}
+
+.thumbnail-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.thumbnail {
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  background: white;
+  border-radius: 999px;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+}
+
+.thumbnail.active {
+  background: #0f172a;
+  color: white;
+}
+
+.detail-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.detail-copy h2 {
+  margin: 0.35rem 0;
+  color: #0f172a;
+}
+
+.favorite-toggle {
+  border: none;
+  background: #f8fafc;
+  color: #ef4444;
+  font-size: 1.3rem;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.description {
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.detail-meta {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  align-items: center;
+}
+
+.price {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.rating {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.detail-card {
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.card-title-row h3 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  background: white;
+  color: #0f172a;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.badge.subtle {
+  background: #e2e8f0;
+}
+
+.info-list {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+  color: #334155;
+}
+
+.vendor-text,
+.vendor-address,
+.vendor-region {
+  margin: 0.6rem 0 0;
+  color: #475569;
+}
+
+.map-card {
+  margin-top: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, #dbeafe, #eff6ff);
+}
+
+.map-pin {
+  font-size: 1.4rem;
+}
+
+.empty-state {
+  margin-top: 1rem;
+  color: #64748b;
+}
+
+@media (max-width: 760px) {
+  .detail-hero,
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}

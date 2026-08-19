@@ -1,0 +1,163 @@
+<div class="content-panel">
+  <header class="topbar">
+    <div class="brand-block">
+      <p class="eyebrow">Marketplace ledger</p>
+      <h1>Vendor dashboard</h1>
+    </div>
+
+    <div class="nav-actions">
+      <span class="chip">Live overview</span>
+      <button class="nav-button" type="button" (click)="logout()">Log out</button>
+    </div>
+  </header>
+
+  <div class="summary-grid">
+    <article class="stat-card highlight">
+      <span class="label">Net revenue</span>
+      <strong>{{ netRevenue() }}</strong>
+      <small class="trend up">+18.2% vs last month</small>
+    </article>
+    <article class="stat-card">
+      <span class="label">Orders today</span>
+      <strong>{{ ordersToday() }}</strong>
+      <small class="trend up">+9 new this hour</small>
+    </article>
+    <article class="stat-card">
+      <span class="label">Active listings</span>
+      <strong>{{ activeListings() }}</strong>
+      <small class="trend steady">12 low-stock alerts</small>
+    </article>
+    <article class="stat-card">
+      <span class="label">Fulfillment rate</span>
+      <strong>{{ fulfillmentRate() }}</strong>
+      <small class="trend up">18 shipments dispatched</small>
+    </article>
+  </div>
+
+  <div *ngIf="isLoading()" class="loading-state">
+    <div class="skeleton-card"></div>
+    <div class="skeleton-list"></div>
+  </div>
+
+  <div *ngIf="!isLoading() && error()" class="empty-state">
+    <p>{{ error() }}</p>
+  </div>
+
+  <div *ngIf="!isLoading() && !error()" class="content">
+    <div class="stat-row">
+      <article class="stat-card stat-card-large">
+        <p class="label">Total registered clients</p>
+        <div class="value price-tag">{{ totalClients() }}</div>
+      </article>
+
+      <article class="stat-card stat-card-large secondary-panel">
+        <p class="label">Marketplace pulse</p>
+        <div class="mini-metric">
+          <strong>3.6%</strong>
+          <span>conversion uplift</span>
+        </div>
+        <small class="trend up">Compared to the previous week</small>
+      </article>
+    </div>
+
+    <section class="analytics-grid">
+      <article class="panel analytics-panel">
+        <div class="panel-header">
+          <h2>Revenue analytics</h2>
+          <span class="pill">Last 12 weeks</span>
+        </div>
+
+        <div class="chart-bars" aria-label="Revenue chart">
+          <span class="bar" *ngFor="let value of revenueTrend()" [style.height.%]="value"></span>
+        </div>
+
+        <div class="chart-legend">
+          <span>Jan</span>
+          <span>Feb</span>
+          <span>Mar</span>
+          <span>Apr</span>
+          <span>May</span>
+          <span>Jun</span>
+          <span>Jul</span>
+          <span>Aug</span>
+          <span>Sep</span>
+          <span>Oct</span>
+          <span>Nov</span>
+          <span>Dec</span>
+        </div>
+      </article>
+
+      <article class="panel health-panel">
+        <div class="panel-header">
+          <h2>Operational health</h2>
+          <span class="pill">Stable</span>
+        </div>
+
+        <div class="health-list">
+          <div class="health-item">
+            <span>Inventory variance</span>
+            <strong>2.1%</strong>
+          </div>
+          <div class="health-item">
+            <span>Returns rate</span>
+            <strong>1.4%</strong>
+          </div>
+          <div class="health-item">
+            <span>Shipping SLA</span>
+            <strong>96%</strong>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel-grid">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>Most active clients</h2>
+          <span class="pill">Updated 12 mins ago</span>
+        </div>
+
+        <div *ngIf="mostActiveClients().length === 0" class="empty-state">
+          <p>No client activity yet</p>
+        </div>
+
+        <table *ngIf="mostActiveClients().length > 0" class="client-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Order count</th>
+              <th>Last order date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let client of mostActiveClients()">
+              <td>{{ client.name }}</td>
+              <td>{{ client.orderCount }}</td>
+              <td>{{ client.lastOrderDate }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <aside class="panel">
+        <div class="panel-header">
+          <h2>Best sellers</h2>
+          <span class="pill">This month</span>
+        </div>
+
+        <div class="product-momentum">
+          <div class="momentum-row" *ngFor="let product of bestSellingProducts()">
+            <div>
+              <strong>{{ product.name }}</strong>
+              <small>{{ product.units }} units sold</small>
+            </div>
+            <div class="momentum-meta">
+              <span class="revenue">{{ product.revenue }}</span>
+              <span class="trend up">{{ product.trend }}</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+</div>

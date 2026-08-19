@@ -1,0 +1,33 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-header">
+      <p class="eyebrow">Vendor portal</p>
+      <h1>Welcome back</h1>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="you@vendor.com" />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="Enter password" />
+      </label>
+
+      <div class="meta-row">
+        <a routerLink="/forgot-password">Forgot password?</a>
+      </div>
+
+      <p class="inline-error" *ngIf="errorMessage">{{ errorMessage }}</p>
+
+      <app-button type="submit" class="submit-btn">Sign in</app-button>
+    </form>
+
+    <p class="switch-text">
+      Don't have an account?
+      <a routerLink="/signup">Sign up</a>
+    </p>
+  </div>
+</section>

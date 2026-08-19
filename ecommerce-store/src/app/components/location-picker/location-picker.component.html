@@ -1,0 +1,48 @@
+<section class="location-shell">
+  <div class="location-header">
+    <div>
+      <h2>Choose your location</h2>
+    </div>
+  </div>
+
+  <div class="map-panel">
+    <h3>Select from map</h3>
+    <div class="map-grid">
+      <button type="button" class="map-option" [class.active]="selectedMap === 'Downtown Hub'" (click)="selectedMap = 'Downtown Hub'">Downtown Hub</button>
+      <button type="button" class="map-option" [class.active]="selectedMap === 'West End'" (click)="selectedMap = 'West End'">West End</button>
+      <button type="button" class="map-option" [class.active]="selectedMap === 'North Plaza'" (click)="selectedMap = 'North Plaza'">North Plaza</button>
+    </div>
+  </div>
+
+  <form class="location-form" (ngSubmit)="saveLocation()">
+    <label>
+      <span>Location label</span>
+      <input [(ngModel)]="form.label" name="label" required />
+    </label>
+    <label>
+      <span>Address line 1</span>
+      <input [(ngModel)]="form.addressLine1" name="addressLine1" required />
+    </label>
+    <label>
+      <span>Address line 2</span>
+      <input [(ngModel)]="form.addressLine2" name="addressLine2" />
+    </label>
+    <label>
+      <span>City</span>
+      <input [(ngModel)]="form.city" name="city" required />
+    </label>
+    <label>
+      <span>State</span>
+      <input [(ngModel)]="form.state" name="state" required />
+    </label>
+    <label>
+      <span>Postal code</span>
+      <input [(ngModel)]="form.postalCode" name="postalCode" required />
+    </label>
+    <label>
+      <span>Country</span>
+      <input [(ngModel)]="form.country" name="country" required />
+    </label>
+    <button type="submit">Save location</button>
+  </form>
+</section>

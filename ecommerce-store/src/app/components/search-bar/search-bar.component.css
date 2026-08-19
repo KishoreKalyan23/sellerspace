@@ -1,0 +1,35 @@
+.search-shell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  backdrop-filter: blur(16px);
+  position: sticky;
+  top: 1rem;
+  z-index: 2;
+}
+
+.search-shell svg {
+  width: 1rem;
+  height: 1rem;
+  stroke: #64748b;
+  stroke-width: 1.6;
+  fill: none;
+}
+
+.search-shell input {
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #0f172a;
+}
+
+.search-shell input::placeholder {
+  color: #64748b;
+}

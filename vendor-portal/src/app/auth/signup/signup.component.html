@@ -1,0 +1,108 @@
+<section class="auth-shell">
+  <div class="auth-card">
+    <div class="auth-header">
+      <p class="eyebrow">Create account</p>
+      <h1>Register as a vendor</h1>
+    </div>
+
+    <div class="stepper" aria-label="Signup steps">
+      <div class="step" *ngFor="let step of steps; let i = index" [class.active]="i === currentStep" [class.done]="i < currentStep">
+        <span>{{ i + 1 }}</span>
+        <small>{{ step }}</small>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div *ngIf="currentStep === 0" class="step-panel">
+        <label class="field">
+          <span>Full name</span>
+          <input type="text" formControlName="name" />
+        </label>
+
+        <label class="field">
+          <span>Email</span>
+          <input type="email" formControlName="email" />
+        </label>
+
+        <label class="field">
+          <span>Mobile number</span>
+          <input type="tel" formControlName="mobile" />
+        </label>
+
+        <label class="field">
+          <span>Alternative mobile number</span>
+          <input type="tel" formControlName="alternateMobile" />
+        </label>
+
+        <label class="field">
+          <span>Password</span>
+          <input type="password" formControlName="password" />
+        </label>
+
+        <label class="field">
+          <span>Confirm password</span>
+          <input type="password" formControlName="confirmPassword" />
+        </label>
+      </div>
+
+      <div *ngIf="currentStep === 1" class="step-panel">
+        <label class="field">
+          <span>Store name</span>
+          <input type="text" formControlName="storeName" />
+        </label>
+
+        <label class="field">
+          <span>GST number</span>
+          <input type="text" formControlName="gstNumber" maxlength="15" />
+          <small class="hint">Format: 22AAAAA0000A1Z5</small>
+        </label>
+      </div>
+
+      <div *ngIf="currentStep === 2" class="step-panel">
+        <label class="field">
+          <span>Building number</span>
+          <input type="text" formControlName="buildingNumber" />
+        </label>
+
+        <label class="field">
+          <span>Street name</span>
+          <input type="text" formControlName="streetName" />
+        </label>
+
+        <label class="field">
+          <span>District</span>
+          <input type="text" formControlName="district" />
+        </label>
+
+        <label class="field">
+          <span>State</span>
+          <input type="text" formControlName="state" />
+        </label>
+
+        <label class="field">
+          <span>Country</span>
+          <input type="text" formControlName="country" />
+        </label>
+
+        <div class="map-box">
+          <div class="map-placeholder">Map picker</div>
+          <div class="coords-row">
+            <span>Lat: {{ form.get('latitude')?.value }}</span>
+            <span>Lng: {{ form.get('longitude')?.value }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="actions">
+        <app-button *ngIf="currentStep > 0" type="button" variant="secondary" (click)="previous()">Back</app-button>
+        <app-button *ngIf="currentStep < steps.length - 1" type="button" variant="primary" [disabled]="!((currentStep === 0 && stepOneValid) || (currentStep === 1 && stepTwoValid))" (click)="next()">Next</app-button>
+        <app-button *ngIf="currentStep === steps.length - 1" type="submit" variant="primary">Create account</app-button>
+      </div>
+    </form>
+
+    <p class="switch-text">
+      Already have an account?
+      <a routerLink="/login">Sign in</a>
+    </p>
+  </div>
+</section>

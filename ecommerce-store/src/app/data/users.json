@@ -1,0 +1,13 @@
+[
+  {
+    "id": 1,
+    "name": "Kavya Sharma",
+    "age": 28,
+    "gender": "Female",
+    "mobileNumber": "+91-9876543210",
+    "email": "kavya@example.com",
+    "favoriteProductIds": [1, 3, 5],
+    "preferredCategories": ["Home", "Accessories"],
+    "preferredVendors": ["Northstar Studio", "Harbor Goods"]
+  }
+]

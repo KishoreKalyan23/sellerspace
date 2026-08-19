@@ -1,0 +1,87 @@
+<section class="vendor-details-page">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Settings</p>
+      <h1>Vendor details</h1>
+      <p class="page-description">Your marketplace account and store information.</p>
+    </div>
+  </header>
+
+  <section *ngIf="vendor() as currentVendor; else missingVendor" class="details-card" aria-label="Vendor details">
+    <div class="details-card__heading">
+      <div class="vendor-monogram">{{ currentVendor.name.slice(0, 1) }}</div>
+      <div>
+        <h2>{{ currentVendor.storeName || currentVendor.name }}</h2>
+        <p>Vendor account</p>
+      </div>
+    </div>
+
+    <section class="details-section">
+      <h3>Store details</h3>
+      <dl class="details-list">
+        <div>
+          <dt>Store name</dt>
+          <dd>{{ currentVendor.storeName || 'Not provided' }}</dd>
+        </div>
+        <div>
+          <dt>GST number</dt>
+          <dd>{{ currentVendor.gstNumber || 'Not provided' }}</dd>
+        </div>
+        <div>
+          <dt>Primary mobile</dt>
+          <dd>{{ currentVendor.mobile || 'Not provided' }}</dd>
+        </div>
+        <div>
+          <dt>Alternate mobile</dt>
+          <dd>{{ currentVendor.alternateMobile || 'Not provided' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="details-section">
+      <h3>Location</h3>
+      <dl class="details-list">
+        <div>
+          <dt>Address</dt>
+          <dd>{{ currentVendor.buildingNumber || 'Not provided' }}{{ currentVendor.streetName ? ', ' + currentVendor.streetName : '' }}</dd>
+        </div>
+        <div>
+          <dt>District</dt>
+          <dd>{{ currentVendor.district || 'Not provided' }}</dd>
+        </div>
+        <div>
+          <dt>State and country</dt>
+          <dd>{{ currentVendor.state || 'Not provided' }}{{ currentVendor.country ? ', ' + currentVendor.country : '' }}</dd>
+        </div>
+        <div>
+          <dt>Coordinates</dt>
+          <dd>{{ currentVendor.latitude ?? 'Not provided' }}, {{ currentVendor.longitude ?? 'Not provided' }}</dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="details-section">
+      <h3>Account</h3>
+      <dl class="details-list">
+        <div>
+          <dt>Account owner</dt>
+          <dd>{{ currentVendor.name }}</dd>
+        </div>
+        <div>
+          <dt>Email address</dt>
+          <dd>{{ currentVendor.email }}</dd>
+        </div>
+        <div>
+          <dt>Vendor ID</dt>
+          <dd>{{ currentVendor.id }}</dd>
+        </div>
+      </dl>
+    </section>
+  </section>
+
+  <ng-template #missingVendor>
+    <section class="empty-state">
+      Vendor details are unavailable for this session.
+    </section>
+  </ng-template>
+</section>

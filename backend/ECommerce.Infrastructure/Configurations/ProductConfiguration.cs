@@ -17,6 +17,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Name).HasColumnName("Name").HasMaxLength(200).IsRequired();
         builder.Property(p => p.Description).HasColumnName("Description").HasMaxLength(1000);
         builder.Property(p => p.Price).HasColumnName("Price").HasColumnType("decimal(10,2)").IsRequired();
+        builder.Property(p => p.TaxPercent).HasColumnName("TaxPercent").HasColumnType("decimal(5,2)").HasDefaultValue(0m).IsRequired();
         builder.Property(p => p.Stock).HasColumnName("Stock").HasDefaultValue(0).IsRequired();
         builder.Property(p => p.ImageUrl).HasColumnName("ImageUrl").HasMaxLength(500);
         builder.Property(p => p.IsActive).HasColumnName("IsActive").HasDefaultValue(true).IsRequired();

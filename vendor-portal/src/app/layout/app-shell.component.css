@@ -126,11 +126,18 @@
 }
 
 .nav-child {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.55rem 0.75rem;
   border-radius: var(--radius-md);
   color: rgba(255, 255, 255, 0.72);
   font-size: 0.8rem;
   text-decoration: none;
+}
+
+.nav-child .nav-icon {
+  font-size: 0.9rem;
 }
 
 .nav-child:hover,
@@ -145,6 +152,84 @@
   overflow-y: auto;
   padding: 2rem;
   overscroll-behavior: contain;
+}
+
+.logout-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: rgba(15, 20, 30, 0.55);
+  backdrop-filter: blur(8px);
+  animation: logout-modal-fade-in 0.15s ease;
+}
+
+@keyframes logout-modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.logout-modal-card {
+  width: min(90vw, 360px);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.logout-modal-card h1 {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.logout-modal-card p {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.logout-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.logout-modal-cancel,
+.logout-modal-confirm {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.logout-modal-cancel {
+  border: 1px solid var(--border-subtle);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.logout-modal-cancel:hover {
+  background: rgba(27, 31, 42, 0.04);
+}
+
+.logout-modal-confirm {
+  border: none;
+  background: var(--color-error);
+  color: #fff;
+}
+
+.logout-modal-confirm:hover {
+  opacity: 0.9;
 }
 
 @media (max-width: 840px) {

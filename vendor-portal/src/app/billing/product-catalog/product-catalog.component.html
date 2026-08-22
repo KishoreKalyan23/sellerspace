@@ -4,25 +4,68 @@
       <span aria-hidden="true">⌕</span>
       <input id="billing-product-search" type="search" placeholder="Search products" [value]="searchQuery()" (input)="updateSearch($event)" />
     </label>
+
+    <div class="layout-toggle" role="group" aria-label="Card size">
+      <button type="button" class="layout-option" [class.active]="cardSize() === 'compact'" (click)="setCardSize('compact')" aria-label="Compact cards">S</button>
+      <button type="button" class="layout-option" [class.active]="cardSize() === 'comfortable'" (click)="setCardSize('comfortable')" aria-label="Comfortable cards">M</button>
+      <button type="button" class="layout-option" [class.active]="cardSize() === 'large'" (click)="setCardSize('large')" aria-label="Large cards">L</button>
+    </div>
   </header>
 
+  <div class="catalog-panel__filters" role="tablist" aria-label="Filter by category">
+    <button type="button" class="category-chip" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">All</button>
+    <button
+      type="button"
+      class="category-chip"
+      *ngFor="let category of categories()"
+      [class.active]="selectedCategory() === category"
+      (click)="setCategory(category)"
+    >
+      {{ category }}
+    </button>
+  </div>
+
   <div class="catalog-panel__body">
-    <div class="product-grid">
-      <article *ngFor="let product of filteredProducts()" class="catalog-card">
+    <div class="product-grid" [class.size-comfortable]="cardSize() === 'comfortable'" [class.size-large]="cardSize() === 'large'">
+      <article *ngFor="let product of filteredProducts()" class="catalog-card" [class.catalog-card--out-of-stock]="availableStock(product) === 0">
         <img *ngIf="imageUrl(product) as thumbnailUrl" class="catalog-card__image" [src]="thumbnailUrl" [alt]="product.name" />
         <div *ngIf="!imageUrl(product)" class="catalog-card__placeholder">No image</div>
         <span class="catalog-card__category">{{ product.category }}</span>
         <h2>{{ product.name }}</h2>
-        <strong>{{ product.price | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
-        <div class="quantity-control">
-          <button type="button" (click)="updateQuantity(product.id, quantityFor(product.id) - 1)" aria-label="Decrease quantity">−</button>
-          <input type="number" min="1" [value]="quantityFor(product.id)" (change)="updateQuantity(product.id, +$any($event.target).value)" aria-label="Quantity" />
-          <button type="button" (click)="updateQuantity(product.id, quantityFor(product.id) + 1)" aria-label="Increase quantity">+</button>
+        <div class="catalog-card__meta">
+          <strong>{{ product.price | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+          <span
+            class="stock-tag"
+            [class.stock-tag--low]="availableStock(product) > 0 && availableStock(product) < 5"
+            [class.stock-tag--out]="availableStock(product) === 0"
+          >
+            {{ availableStock(product) === 0 ? 'Out of stock' : availableStock(product) + ' in stock' }}
+          </span>
         </div>
-        <button type="button" class="add-button" (click)="addToBill(product)">Add to bill</button>
+        <div class="quantity-control">
+          <button type="button" [disabled]="quantityFor(product) <= 1" (click)="updateQuantity(product, quantityFor(product) - 1)" aria-label="Decrease quantity">−</button>
+          <input
+            type="number"
+            min="1"
+            [max]="availableStock(product)"
+            [disabled]="availableStock(product) === 0"
+            [value]="quantityFor(product)"
+            (change)="updateQuantity(product, +$any($event.target).value)"
+            aria-label="Quantity"
+          />
+          <button
+            type="button"
+            [disabled]="quantityFor(product) >= availableStock(product)"
+            (click)="updateQuantity(product, quantityFor(product) + 1)"
+            aria-label="Increase quantity"
+          >+</button>
+        </div>
+        <app-button type="button" size="sm" [fullWidth]="true" [disabled]="availableStock(product) === 0" (click)="addToBill(product)">
+          {{ availableStock(product) === 0 ? 'Out of stock' : 'Add to bill' }}
+        </app-button>
       </article>
 
-      <div *ngIf="filteredProducts().length === 0" class="empty-state">No products match your search.</div>
+      <app-empty-state *ngIf="filteredProducts().length === 0" [bare]="true" message="No products match your search." />
     </div>
   </div>
 </section>

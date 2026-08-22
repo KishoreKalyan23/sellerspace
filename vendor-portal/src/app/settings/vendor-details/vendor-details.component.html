@@ -1,11 +1,7 @@
 <section class="vendor-details-page">
-  <header class="page-header">
-    <div>
-      <p class="eyebrow">Settings</p>
-      <h1>Vendor details</h1>
-      <p class="page-description">Your marketplace account and store information.</p>
-    </div>
-  </header>
+  <app-page-header eyebrow="Settings" title="Vendor details" description="Your marketplace account and store information.">
+    <a class="request-changes-link" href="mailto:support@vendor-portal.example?subject=Update%20vendor%20details">Request changes</a>
+  </app-page-header>
 
   <section *ngIf="vendor() as currentVendor; else missingVendor" class="details-card" aria-label="Vendor details">
     <div class="details-card__heading">
@@ -80,8 +76,6 @@
   </section>
 
   <ng-template #missingVendor>
-    <section class="empty-state">
-      Vendor details are unavailable for this session.
-    </section>
+    <app-empty-state message="Vendor details are unavailable for this session." />
   </ng-template>
 </section>

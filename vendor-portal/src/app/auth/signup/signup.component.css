@@ -9,7 +9,7 @@
 .auth-card {
   width: min(100%, 620px);
   background: var(--color-surface);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
   padding: 2rem;
 }
@@ -19,7 +19,7 @@
 }
 
 .eyebrow {
-  color: var(--color-accent);
+  color: var(--color-accent-text);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -92,33 +92,24 @@ form {
   color: var(--color-text);
 }
 
+.field input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+.field-error {
+  color: var(--color-error);
+  font-size: 0.75rem;
+}
+
 .hint {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
 }
 
-.map-box {
-  background: rgba(31,58,92,0.04);
-  border: 1px dashed rgba(31,58,92,0.18);
-  border-radius: 10px;
-  padding: 1rem;
-}
-
-.map-placeholder {
+.coords-fields {
   display: grid;
-  place-items: center;
-  min-height: 170px;
-  background: linear-gradient(135deg, rgba(192,138,46,0.15), rgba(31,58,92,0.1));
-  border-radius: 8px;
-  font-weight: 700;
-  color: var(--color-primary);
-}
-
-.coords-row {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 0.8rem;
-  color: var(--color-text-secondary);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .actions {
@@ -136,4 +127,27 @@ form {
 .switch-text a {
   color: var(--color-primary);
   font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .auth-shell {
+    padding: 1rem;
+  }
+
+  .auth-card {
+    padding: 1.5rem;
+  }
+
+  .stepper {
+    grid-template-columns: 1fr;
+  }
+
+  .coords-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+  }
 }

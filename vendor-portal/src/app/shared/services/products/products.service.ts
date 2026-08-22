@@ -2,11 +2,14 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { CategoriesService } from '../categories/categories.service';
+
 export interface Product {
   id: number;
   name: string;
   category: string;
   price: number;
+  taxPercent: number;
   description: string;
   stockQuantity: number;
   imageUrl?: string;
@@ -24,6 +27,7 @@ interface BackendProductItem {
   categoryId: number;
   name: string;
   price: number;
+  taxPercent?: number;
   stock: number;
   imageUrl?: string | null;
   isActive: boolean;
@@ -36,6 +40,7 @@ interface BackendProductItem {
 })
 export class ProductsService {
   private readonly http = inject(HttpClient);
+  private readonly categoriesService = inject(CategoriesService);
   private readonly baseUrl = 'https://localhost:55142';
 
   readonly products = signal<Product[]>(this.getFallbackProducts());
@@ -62,6 +67,7 @@ export class ProductsService {
       name: product.name,
       description: product.description,
       price: product.price,
+      taxPercent: product.taxPercent,
       stock: product.stockQuantity,
       imageUrl: '',
     };
@@ -78,6 +84,7 @@ export class ProductsService {
             categoryId: payload.categoryId,
             name: payload.name,
             price: payload.price,
+            taxPercent: payload.taxPercent,
             stock: payload.stock,
             isActive: true,
             categoryName: product.category,
@@ -101,6 +108,7 @@ export class ProductsService {
           categoryId: payload.categoryId,
           name: payload.name,
           price: payload.price,
+          taxPercent: payload.taxPercent,
           stock: payload.stock,
           isActive: true,
           categoryName: product.category,
@@ -134,6 +142,7 @@ export class ProductsService {
     name: item.name,
     category: item.categoryName ?? this.resolveCategoryName(item.categoryId),
     price: Number(item.price ?? 0),
+    taxPercent: Number(item.taxPercent ?? 0),
     description: item.name,
     stockQuantity: item.stock ?? 0,
     imageUrl: item.imageUrl ?? undefined,
@@ -141,21 +150,14 @@ export class ProductsService {
 
   private resolveCategoryId(category: string): number {
     const normalized = category.toLowerCase();
-    const map: Record<string, number> = {
-      electronics: 1,
-      fashion: 2,
-      home: 3,
-    };
-    return map[normalized] ?? 1;
+    const categories = this.categoriesService.categories();
+    const match = categories.find((entry) => entry.name.toLowerCase() === normalized);
+    return match?.id ?? categories[0]?.id ?? 1;
   }
 
   private resolveCategoryName(categoryId: number): string {
-    const map: Record<number, string> = {
-      1: 'electronics',
-      2: 'fashion',
-      3: 'home',
-    };
-    return map[categoryId] ?? 'general';
+    const match = this.categoriesService.categories().find((entry) => entry.id === categoryId);
+    return match?.name.toLowerCase() ?? 'general';
   }
 
   private getFallbackProducts(): Product[] {
@@ -165,6 +167,7 @@ export class ProductsService {
         name: 'Aurora Desk Lamp',
         category: 'home',
         price: 1499,
+        taxPercent: 0,
         description: 'Minimal task lamp with warm dimmable LED lighting.',
         stockQuantity: 32,
       },
@@ -173,6 +176,7 @@ export class ProductsService {
         name: 'Terra Canvas Tote',
         category: 'fashion',
         price: 1299,
+        taxPercent: 0,
         description: 'Everyday tote designed for commuting and travel.',
         stockQuantity: 22,
       },
@@ -181,6 +185,7 @@ export class ProductsService {
         name: 'Echo Wireless Speaker',
         category: 'electronics',
         price: 3999,
+        taxPercent: 0,
         description: 'Portable speaker with deep bass and all-day battery life.',
         stockQuantity: 18,
       },

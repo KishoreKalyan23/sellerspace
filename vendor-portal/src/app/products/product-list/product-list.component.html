@@ -1,50 +1,123 @@
 <section class="page-shell">
-  <header class="topbar">
-    <div class="brand-block">
-      <p class="eyebrow">Catalog</p>
-      <h1>Products</h1>
+  <header class="hero">
+    <div class="hero-top">
+      <div class="hero-copy">
+        <p class="eyebrow">Catalog</p>
+        <h1>Products</h1>
+        <p class="hero-subtitle">Manage listings, pricing, and stock for your marketplace storefront.</p>
+      </div>
+
+      <div class="hero-actions">
+        <label class="search-field" for="product-search">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input
+            id="product-search"
+            type="search"
+            placeholder="Search products"
+            [value]="searchQuery()"
+            (input)="updateSearchQuery($event)"
+          />
+        </label>
+      </div>
     </div>
 
-    <div class="product-search">
-      <label class="search-field" for="product-search">
-        <span class="search-icon" aria-hidden="true">⌕</span>
-        <input
-          id="product-search"
-          type="search"
-          placeholder="Search products"
-          [value]="searchQuery()"
-          (input)="updateSearchQuery($event)"
-        />
-      </label>
-    </div>
-
-    <div class="topbar-actions">
-      <span class="chip">Inventory overview</span>
-      <a class="primary-link" routerLink="/products/new">Add product</a>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <span class="hero-stat-icon" aria-hidden="true">◫</span>
+        <div>
+          <strong>{{ totalInventory() }}</strong>
+          <small>Units in inventory</small>
+        </div>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-icon" aria-hidden="true">◌</span>
+        <div>
+          <strong>{{ filteredProducts().length }}</strong>
+          <small>{{ searchQuery() || selectedCategory() !== 'all' ? 'Matching products' : 'Active listings' }}</small>
+        </div>
+      </div>
     </div>
   </header>
 
-  <div class="summary-bar">
-    <div class="summary-card">
-      <span class="label">Inventory</span>
-      <strong>{{ totalInventory() }}</strong>
-      <small>Units across all listings</small>
+  <div class="category-filter">
+    <div class="category-chip-group" role="tablist" aria-label="Filter by category">
+      <button type="button" class="category-chip" [class.active]="selectedCategory() === 'all'" (click)="setCategory('all')">
+        All
+      </button>
+      <button
+        type="button"
+        class="category-chip"
+        *ngFor="let category of categories()"
+        [class.active]="selectedCategory() === category"
+        (click)="setCategory(category)"
+      >
+        {{ category }}
+      </button>
+      <button
+        type="button"
+        class="category-chip category-chip--low-stock"
+        [class.active]="showLowStockOnly()"
+        (click)="toggleLowStockOnly()"
+      >
+        Low stock ({{ lowStockCount() + outOfStockCount() }})
+      </button>
     </div>
-    <div class="summary-card">
-      <span class="label">Active listings</span>
-      <strong>{{ filteredProducts().length }}</strong>
-      <small>{{ searchQuery() ? 'Matching products' : 'Products in catalog' }}</small>
+
+    <div class="category-actions">
+      <button type="button" class="manage-categories-button" (click)="openCategoriesModal()">Manage categories</button>
+
+      <div class="layout-toggle" role="group" aria-label="Card size">
+        <button
+          type="button"
+          class="layout-option"
+          [class.active]="cardSize() === 'compact'"
+          (click)="setCardSize('compact')"
+          aria-label="Compact cards"
+        >
+          S
+        </button>
+        <button
+          type="button"
+          class="layout-option"
+          [class.active]="cardSize() === 'comfortable'"
+          (click)="setCardSize('comfortable')"
+          aria-label="Comfortable cards"
+        >
+          M
+        </button>
+        <button
+          type="button"
+          class="layout-option"
+          [class.active]="cardSize() === 'large'"
+          (click)="setCardSize('large')"
+          aria-label="Large cards"
+        >
+          L
+        </button>
+      </div>
+
+      <button type="button" class="add-product-button" (click)="openAddModal()">
+        <span aria-hidden="true">＋</span>
+        Add product
+      </button>
     </div>
   </div>
 
   <div class="product-results">
-    <div class="product-grid">
+    <div class="product-grid" [class.size-comfortable]="cardSize() === 'comfortable'" [class.size-large]="cardSize() === 'large'">
       <article class="product-card" *ngFor="let product of filteredProducts(); trackBy: trackByProductId">
-        <img *ngIf="imageUrl(product) as thumbnailUrl" class="product-thumbnail" [src]="thumbnailUrl" [alt]="product.name" />
-        <div *ngIf="!imageUrl(product)" class="thumbnail-placeholder">No image</div>
-        <div class="product-header">
-          <span class="tag">{{ product.category }}</span>
-          <span class="stock-tag">{{ product.stockQuantity }} in stock</span>
+        <div class="product-media">
+          <img *ngIf="imageUrl(product) as thumbnailUrl" class="product-thumbnail" [src]="thumbnailUrl" [alt]="product.name" />
+          <div *ngIf="!imageUrl(product)" class="thumbnail-placeholder">No image</div>
+          <span class="tag media-badge media-badge--left">{{ product.category }}</span>
+          <span
+            class="stock-tag media-badge media-badge--right"
+            [class.stock-tag--low]="product.stockQuantity > 0 && product.stockQuantity < 10"
+            [class.stock-tag--out]="product.stockQuantity === 0"
+          >
+            {{ product.stockQuantity === 0 ? 'Out of stock' : product.stockQuantity + ' in stock' }}
+          </span>
+          <div class="price-tag media-price">₹{{ product.price }}</div>
         </div>
 
         <div class="product-body">
@@ -53,16 +126,55 @@
         </div>
 
         <div class="product-footer">
-          <div class="price-tag">₹{{ product.price }}</div>
-          <div class="card-actions">
-            <a class="link-button" [routerLink]="['/products', product.id, 'edit']">Edit</a>
-            <button type="button" class="ghost-button">View</button>
-          </div>
+          <a class="link-button" [routerLink]="['/products', product.id, 'edit']">Edit</a>
+          <button type="button" class="ghost-button">View</button>
         </div>
       </article>
 
-      <div *ngIf="filteredProducts().length === 0" class="empty-state">
-        No products match your search.
+      <app-empty-state
+        *ngIf="filteredProducts().length === 0"
+        icon="⌕"
+        message="No products match your filters."
+        hint="Try a different keyword or category, or add a new product."
+      />
+    </div>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="isAddModalOpen()">
+    <app-product-form [embedded]="true" (closed)="closeAddModal()" (saved)="closeAddModal()" />
+  </div>
+
+  <div class="modal-backdrop" *ngIf="isCategoriesModalOpen()">
+    <div class="categories-modal" role="dialog" aria-modal="true" aria-labelledby="manage-categories-title">
+      <button type="button" class="modal-close" (click)="closeCategoriesModal()" aria-label="Close">×</button>
+
+      <header class="modal-header">
+        <h1 id="manage-categories-title">Manage categories</h1>
+      </header>
+
+      <div class="modal-scroll" [id]="categoriesModalScrollId">
+        <ul class="category-list">
+          <li *ngFor="let category of manageableCategories()">
+            <span>{{ category.name }}</span>
+            <button type="button" class="remove-category-button" (click)="deleteCategory(category.id)" [attr.aria-label]="'Delete ' + category.name">×</button>
+          </li>
+          <li *ngIf="manageableCategories().length === 0" class="category-list__empty">No categories yet.</li>
+        </ul>
+
+        <div class="add-category-row">
+          <input
+            type="text"
+            placeholder="New category name"
+            [value]="newCategoryName()"
+            (input)="onNewCategoryNameInput($event)"
+            (keydown.enter)="addCategory()"
+          />
+          <button type="button" class="add-category-button" [disabled]="isSavingCategory()" (click)="addCategory()">
+            {{ isSavingCategory() ? 'Adding…' : 'Add' }}
+          </button>
+        </div>
+
+        <p *ngIf="categoryError()" class="category-error">{{ categoryError() }}</p>
       </div>
     </div>
   </div>

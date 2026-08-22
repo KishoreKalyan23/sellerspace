@@ -1,3 +1,16 @@
+:host {
+  display: inline-block;
+}
+
+:host(.full-width) {
+  display: block;
+  width: 100%;
+}
+
+:host(.full-width) .btn {
+  width: 100%;
+}
+
 .btn {
   border: none;
   border-radius: 8px;
@@ -15,7 +28,7 @@
 .btn-primary {
   background: var(--color-primary);
   color: var(--color-surface);
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-cta);
 }
 
 .btn-secondary {
@@ -26,4 +39,16 @@
 .btn-ghost {
   background: transparent;
   color: var(--color-primary);
+}
+
+.btn-sm {
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8rem;
+  border-radius: 999px;
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: 0.7rem 1.1rem;
+  }
 }

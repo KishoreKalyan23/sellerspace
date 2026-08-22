@@ -1,0 +1,70 @@
+<section class="customers-page" aria-label="Customers">
+  <app-page-header eyebrow="Directory" title="Customers" description="Everyone who's been billed, plus anyone you add manually.">
+    <app-button type="button" size="sm" (click)="openAddModal()">+ Add customer</app-button>
+  </app-page-header>
+
+  <section class="panel">
+    <div *ngIf="isLoading()" class="loading-state">Loading customers…</div>
+
+    <app-empty-state
+      *ngIf="!isLoading() && customers().length === 0"
+      message="No customers yet."
+      hint="Customers are added automatically when you bill them, or you can add one manually."
+    />
+
+    <div *ngIf="!isLoading() && customers().length > 0" class="customer-table-wrap">
+      <table class="customer-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Email</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let customer of customers()">
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.mobile }}</td>
+            <td>{{ customer.email || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div *ngIf="isAddModalOpen()" class="modal-backdrop">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="add-customer-title">
+      <button type="button" class="modal-close" (click)="closeAddModal()" aria-label="Close">×</button>
+
+      <header class="modal-header">
+        <h1 id="add-customer-title">Add customer</h1>
+      </header>
+
+      <div class="modal-scroll">
+        <div class="customer-form">
+          <label class="field">
+            <span>Name</span>
+            <input type="text" [value]="name()" (input)="onNameInput($event)" placeholder="Customer name" />
+          </label>
+          <label class="field">
+            <span>Mobile number</span>
+            <input type="tel" [value]="mobile()" (input)="onMobileInput($event)" placeholder="10-digit mobile" />
+          </label>
+          <label class="field">
+            <span>Email (optional)</span>
+            <input type="email" [value]="email()" (input)="onEmailInput($event)" placeholder="name@example.com" />
+          </label>
+
+          <p *ngIf="formError()" class="form-error">{{ formError() }}</p>
+
+          <div class="actions">
+            <app-button type="button" variant="secondary" (click)="closeAddModal()">Cancel</app-button>
+            <app-button type="button" [disabled]="isSaving()" (click)="save()">
+              {{ isSaving() ? 'Saving…' : 'Save customer' }}
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -22,14 +22,21 @@ export class ForgotPasswordComponent {
   });
 
   submitted = false;
+  errorMessage = '';
 
-  submit(): void {
+  async submit(): Promise<void> {
     this.form.markAllAsTouched();
     if (this.form.invalid) {
       return;
     }
 
-    this.authService.requestPasswordReset();
+    this.errorMessage = '';
+    const succeeded = await this.authService.requestPasswordReset();
+    if (!succeeded) {
+      this.errorMessage = 'Something went wrong sending the reset link. Please try again.';
+      return;
+    }
+
     this.submitted = true;
   }
 }

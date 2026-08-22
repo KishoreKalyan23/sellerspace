@@ -10,6 +10,8 @@ public class CreateProductRequestDto
 
     public decimal Price { get; set; }
 
+    public decimal TaxPercent { get; set; }
+
     public int Stock { get; set; }
 
     public string? ImageUrl { get; set; }

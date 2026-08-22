@@ -1,57 +1,68 @@
-<section class="page-shell">
-  <header class="topbar">
+<section class="page-shell" [class.embedded]="embedded">
+  <button *ngIf="embedded" type="button" class="modal-close" (click)="cancel()" aria-label="Close">×</button>
+
+  <header class="topbar" *ngIf="!embedded">
     <div>
       <p class="eyebrow">Catalog</p>
       <h1>{{ isEditMode ? 'Edit product' : 'Create product' }}</h1>
     </div>
   </header>
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="product-form" novalidate>
-    <label class="field">
-      <span>Product name</span>
-      <input type="text" formControlName="name" placeholder="Enter product name" />
-    </label>
+  <header class="modal-header" *ngIf="embedded">
+    <h1>{{ isEditMode ? 'Edit product details' : 'Add product details' }}</h1>
+  </header>
 
-    <label class="field">
-      <span>Category</span>
-      <select formControlName="category">
-        <option value="">Select category</option>
-        <option value="electronics">Electronics</option>
-        <option value="fashion">Fashion</option>
-        <option value="home">Home</option>
-      </select>
-    </label>
-
-    <label class="field">
-      <span>Price</span>
-      <input type="number" formControlName="price" min="0.01" step="0.01" placeholder="0.00" />
-    </label>
-
-    <label class="field">
-      <span>Description</span>
-      <textarea formControlName="description" rows="4" placeholder="Describe the product"></textarea>
-    </label>
-
-    <label class="field">
-      <span>Stock quantity</span>
-      <input type="number" formControlName="stockQuantity" min="0" step="1" placeholder="0" />
-    </label>
-
-    <div class="field">
-      <span>Product images</span>
-      <label class="image-upload" for="product-image">
-        <input id="product-image" type="file" accept="image/jpeg,image/png,image/webp" multiple (change)="onImageSelected($event)" />
-        <span>Select images</span>
-        <small>Up to 6 JPG, PNG, or WebP images, 5 MB each</small>
+  <div class="modal-scroll">
+    <form [formGroup]="form" (ngSubmit)="submit()" class="product-form" novalidate>
+      <label class="field">
+        <span>Product name</span>
+        <input type="text" formControlName="name" placeholder="Enter product name" />
       </label>
-      <div *ngIf="imagePreviewUrls.length" class="image-preview-grid">
-        <img *ngFor="let imagePreviewUrl of imagePreviewUrls; let index = index" class="image-preview" [src]="imagePreviewUrl" [alt]="'Product preview ' + (index + 1)" />
-      </div>
-    </div>
 
-    <div class="actions">
-      <app-button type="button" variant="secondary" routerLink="/products">Cancel</app-button>
-      <app-button type="submit">{{ isEditMode ? 'Update product' : 'Save product' }}</app-button>
-    </div>
-  </form>
+      <label class="field">
+        <span>Category</span>
+        <select formControlName="category">
+          <option value="">Select category</option>
+          <option *ngFor="let category of categories()" [value]="category.name.toLowerCase()">{{ category.name }}</option>
+        </select>
+      </label>
+
+      <label class="field">
+        <span>Price</span>
+        <input type="number" formControlName="price" min="0.01" step="0.01" placeholder="0.00" />
+      </label>
+
+      <label class="field">
+        <span>Tax %</span>
+        <input type="number" formControlName="taxPercent" min="0" max="100" step="0.5" placeholder="0" />
+      </label>
+
+      <label class="field">
+        <span>Description</span>
+        <textarea formControlName="description" rows="4" placeholder="Describe the product"></textarea>
+      </label>
+
+      <label class="field">
+        <span>Stock quantity</span>
+        <input type="number" formControlName="stockQuantity" min="0" step="1" placeholder="0" />
+      </label>
+
+      <div class="field">
+        <span>Product images</span>
+        <label class="image-upload" for="product-image">
+          <input id="product-image" type="file" accept="image/jpeg,image/png,image/webp" multiple (change)="onImageSelected($event)" />
+          <span>Select images</span>
+          <small>Up to 6 JPG, PNG, or WebP images, 5 MB each</small>
+        </label>
+        <div *ngIf="imagePreviewUrls.length" class="image-preview-grid">
+          <img *ngFor="let imagePreviewUrl of imagePreviewUrls; let index = index" class="image-preview" [src]="imagePreviewUrl" [alt]="'Product preview ' + (index + 1)" />
+        </div>
+      </div>
+
+      <div class="actions">
+        <app-button type="button" variant="secondary" (click)="cancel()">Cancel</app-button>
+        <app-button type="submit">{{ isEditMode ? 'Update product' : 'Save product' }}</app-button>
+      </div>
+    </form>
+  </div>
 </section>

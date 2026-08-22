@@ -145,6 +145,7 @@ public class ProductRepository : IProductRepository
         existingProduct.Name = product.Name;
         existingProduct.Description = product.Description;
         existingProduct.Price = product.Price;
+        existingProduct.TaxPercent = product.TaxPercent;
         existingProduct.Stock = product.Stock;
         existingProduct.ImageUrl = product.ImageUrl;
         existingProduct.UpdatedAt = DateTime.UtcNow;

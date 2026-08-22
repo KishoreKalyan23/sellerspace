@@ -6,11 +6,23 @@ public class VendorDashboardSummaryDto
 
     public int ActiveListings { get; set; }
 
+    public int LowStockListings { get; set; }
+
+    public int OutOfStockListings { get; set; }
+
     public decimal NetRevenue { get; set; }
 
     public int OrdersToday { get; set; }
 
+    public int OrdersThisWeek { get; set; }
+
     public double FulfillmentRate { get; set; }
+
+    public decimal AverageOrderValue { get; set; }
+
+    public double NetRevenueWeekOverWeekChange { get; set; }
+
+    public IReadOnlyList<decimal> RevenueTrend { get; set; } = Array.Empty<decimal>();
 
     public IReadOnlyList<VendorActivityDto> MostActiveClients { get; set; } = Array.Empty<VendorActivityDto>();
 
@@ -32,7 +44,7 @@ public class BestSellerDto
 
     public int Units { get; set; }
 
-    public string Revenue { get; set; } = string.Empty;
+    public decimal Revenue { get; set; }
 
-    public string Trend { get; set; } = string.Empty;
+    public double RevenueSharePercent { get; set; }
 }

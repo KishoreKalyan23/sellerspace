@@ -1,0 +1,170 @@
+<section class="invoices-page" aria-label="Billed invoices">
+  <app-page-header eyebrow="Settings" title="Billed invoices" description="Every bill you've completed, with full line-item detail.">
+  </app-page-header>
+
+  <section class="panel">
+    <div *ngIf="isLoading()" class="loading-state">Loading invoices…</div>
+
+    <app-empty-state
+      *ngIf="!isLoading() && invoices().length === 0"
+      message="No invoices yet."
+      hint="Completed bills from Billing and Pro Billing will show up here."
+    />
+
+    <div *ngIf="!isLoading() && invoices().length > 0" class="invoice-table-wrap">
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Invoice</th>
+            <th>Customer</th>
+            <th>Items</th>
+            <th>Payment</th>
+            <th>Grand total</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let invoice of invoices()">
+            <td>#{{ invoice.orderId }}</td>
+            <td>
+              {{ invoice.clientName }}
+              <small *ngIf="invoice.customerMobile">{{ invoice.customerMobile }}</small>
+            </td>
+            <td>{{ invoice.itemCount }}</td>
+            <td>{{ invoice.paymentMethod }}</td>
+            <td>{{ invoice.grandTotal | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+            <td>
+              <span
+                class="status-tag"
+                [class.status-tag--processing]="invoice.status === 'Processing'"
+                [class.status-tag--returned]="invoice.status === 'Returned'"
+              >
+                {{ invoice.status }}
+              </span>
+            </td>
+            <td>{{ invoice.createdAt | date:'d MMM y, h:mm a' }}</td>
+            <td class="row-actions">
+              <button type="button" class="view-button" (click)="viewInvoice(invoice.orderId)">View</button>
+              <button
+                type="button"
+                class="return-button"
+                *ngIf="invoice.status !== 'Returned'"
+                (click)="requestReturn(invoice.orderId)"
+              >
+                Return
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div *ngIf="isDetailLoading() || selectedInvoice()" class="modal-backdrop">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="invoice-detail-title">
+      <button type="button" class="modal-close" (click)="closeDetail()" aria-label="Close">×</button>
+
+      <header class="modal-header">
+        <h1 id="invoice-detail-title">
+          {{ selectedInvoice() ? ('Invoice #' + selectedInvoice()!.orderId) : 'Loading invoice…' }}
+        </h1>
+      </header>
+
+      <div class="modal-scroll">
+        <div *ngIf="isDetailLoading()" class="loading-state">Loading…</div>
+
+        <div *ngIf="!isDetailLoading() && selectedInvoice() as invoice" class="invoice-detail">
+          <div class="invoice-detail__meta">
+            <div>
+              <span class="label">Customer</span>
+              <strong>{{ invoice.clientName }}</strong>
+              <small *ngIf="invoice.customerMobile">{{ invoice.customerMobile }}</small>
+              <small *ngIf="invoice.customerEmail">{{ invoice.customerEmail }}</small>
+            </div>
+            <div>
+              <span class="label">Billed on</span>
+              <strong>{{ invoice.createdAt | date:'d MMM y, h:mm a' }}</strong>
+            </div>
+            <div>
+              <span class="label">Payment</span>
+              <strong>{{ invoice.paymentMethod }}</strong>
+            </div>
+            <div>
+              <span class="label">Status</span>
+              <strong>{{ invoice.status }}</strong>
+            </div>
+          </div>
+
+          <table class="invoice-items-table">
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price/unit</th>
+                <th>Tax %</th>
+                <th>Line total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of invoice.items">
+                <td>{{ item.productName }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unitPrice | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+                <td>{{ item.taxPercent }}%</td>
+                <td>{{ item.lineTotal | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="invoice-detail__totals">
+            <div class="total-row">
+              <span>Subtotal</span>
+              <strong>{{ invoice.totalAmount | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+            </div>
+            <div class="total-row">
+              <span>Total tax</span>
+              <strong>{{ invoice.taxAmount | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+            </div>
+            <div class="total-row total-row--final">
+              <span>Grand total</span>
+              <strong>{{ invoice.grandTotal | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+            </div>
+            <div class="total-row" *ngIf="invoice.amountReceived !== null">
+              <span>Amount received</span>
+              <strong>{{ invoice.amountReceived | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+            </div>
+            <div class="total-row" *ngIf="invoice.balanceReturned !== null">
+              <span>Balance returned</span>
+              <strong>{{ invoice.balanceReturned | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="return-button return-button--detail"
+            *ngIf="invoice.status !== 'Returned'"
+            (click)="requestReturn(invoice.orderId)"
+          >
+            Return this invoice
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="returnConfirmOrderId() !== null" class="modal-backdrop">
+    <div class="confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="return-confirm-title">
+      <h1 id="return-confirm-title">Return invoice #{{ returnConfirmOrderId() }}?</h1>
+      <p>This restocks every item on this bill and marks it as returned. This can't be undone.</p>
+      <p *ngIf="returnError()" class="return-error">{{ returnError() }}</p>
+      <div class="confirm-actions">
+        <button type="button" class="confirm-cancel" (click)="cancelReturn()">Cancel</button>
+        <button type="button" class="confirm-return" [disabled]="isReturning()" (click)="confirmReturn()">
+          {{ isReturning() ? 'Returning…' : 'Return invoice' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

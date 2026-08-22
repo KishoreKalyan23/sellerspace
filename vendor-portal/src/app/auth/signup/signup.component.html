@@ -6,7 +6,13 @@
     </div>
 
     <div class="stepper" aria-label="Signup steps">
-      <div class="step" *ngFor="let step of steps; let i = index" [class.active]="i === currentStep" [class.done]="i < currentStep">
+      <div
+        class="step"
+        *ngFor="let step of steps; let i = index"
+        [class.active]="i === currentStep"
+        [class.done]="i < currentStep"
+        [attr.aria-current]="i === currentStep ? 'step' : null"
+      >
         <span>{{ i + 1 }}</span>
         <small>{{ step }}</small>
       </div>
@@ -16,17 +22,20 @@
       <div *ngIf="currentStep === 0" class="step-panel">
         <label class="field">
           <span>Full name</span>
-          <input type="text" formControlName="name" />
+          <input type="text" formControlName="name" [attr.aria-invalid]="showError('name')" />
+          <small class="field-error" *ngIf="showError('name')">Full name is required.</small>
         </label>
 
         <label class="field">
           <span>Email</span>
-          <input type="email" formControlName="email" />
+          <input type="email" formControlName="email" [attr.aria-invalid]="showError('email')" />
+          <small class="field-error" *ngIf="showError('email')">Enter a valid email address.</small>
         </label>
 
         <label class="field">
           <span>Mobile number</span>
-          <input type="tel" formControlName="mobile" />
+          <input type="tel" formControlName="mobile" [attr.aria-invalid]="showError('mobile')" />
+          <small class="field-error" *ngIf="showError('mobile')">Mobile number is required.</small>
         </label>
 
         <label class="field">
@@ -36,61 +45,74 @@
 
         <label class="field">
           <span>Password</span>
-          <input type="password" formControlName="password" />
+          <input type="password" formControlName="password" [attr.aria-invalid]="showError('password')" />
+          <small class="field-error" *ngIf="showError('password')">Password must be at least 8 characters.</small>
         </label>
 
         <label class="field">
           <span>Confirm password</span>
-          <input type="password" formControlName="confirmPassword" />
+          <input type="password" formControlName="confirmPassword" [attr.aria-invalid]="form.controls.confirmPassword.touched && passwordMismatch" />
+          <small class="field-error" *ngIf="form.controls.confirmPassword.touched && passwordMismatch">Passwords do not match.</small>
         </label>
       </div>
 
       <div *ngIf="currentStep === 1" class="step-panel">
         <label class="field">
           <span>Store name</span>
-          <input type="text" formControlName="storeName" />
+          <input type="text" formControlName="storeName" [attr.aria-invalid]="showError('storeName')" />
+          <small class="field-error" *ngIf="showError('storeName')">Store name is required.</small>
         </label>
 
         <label class="field">
           <span>GST number</span>
-          <input type="text" formControlName="gstNumber" maxlength="15" />
-          <small class="hint">Format: 22AAAAA0000A1Z5</small>
+          <input type="text" formControlName="gstNumber" maxlength="15" [attr.aria-invalid]="showError('gstNumber')" />
+          <small class="field-error" *ngIf="showError('gstNumber')">Enter a valid GST number, format: 22AAAAA0000A1Z5</small>
+          <small class="hint" *ngIf="!showError('gstNumber')">Format: 22AAAAA0000A1Z5</small>
         </label>
       </div>
 
       <div *ngIf="currentStep === 2" class="step-panel">
         <label class="field">
           <span>Building number</span>
-          <input type="text" formControlName="buildingNumber" />
+          <input type="text" formControlName="buildingNumber" [attr.aria-invalid]="showError('buildingNumber')" />
+          <small class="field-error" *ngIf="showError('buildingNumber')">Building number is required.</small>
         </label>
 
         <label class="field">
           <span>Street name</span>
-          <input type="text" formControlName="streetName" />
+          <input type="text" formControlName="streetName" [attr.aria-invalid]="showError('streetName')" />
+          <small class="field-error" *ngIf="showError('streetName')">Street name is required.</small>
         </label>
 
         <label class="field">
           <span>District</span>
-          <input type="text" formControlName="district" />
+          <input type="text" formControlName="district" [attr.aria-invalid]="showError('district')" />
+          <small class="field-error" *ngIf="showError('district')">District is required.</small>
         </label>
 
         <label class="field">
           <span>State</span>
-          <input type="text" formControlName="state" />
+          <input type="text" formControlName="state" [attr.aria-invalid]="showError('state')" />
+          <small class="field-error" *ngIf="showError('state')">State is required.</small>
         </label>
 
         <label class="field">
           <span>Country</span>
-          <input type="text" formControlName="country" />
+          <input type="text" formControlName="country" [attr.aria-invalid]="showError('country')" />
+          <small class="field-error" *ngIf="showError('country')">Country is required.</small>
         </label>
 
-        <div class="map-box">
-          <div class="map-placeholder">Map picker</div>
-          <div class="coords-row">
-            <span>Lat: {{ form.get('latitude')?.value }}</span>
-            <span>Lng: {{ form.get('longitude')?.value }}</span>
-          </div>
+        <div class="coords-fields">
+          <label class="field">
+            <span>Latitude</span>
+            <input type="number" step="0.000001" formControlName="latitude" placeholder="e.g. 12.9716" />
+          </label>
+          <label class="field">
+            <span>Longitude</span>
+            <input type="number" step="0.000001" formControlName="longitude" placeholder="e.g. 77.5946" />
+          </label>
         </div>
+        <small class="hint">Enter coordinates manually, or look them up from Google Maps.</small>
       </div>
 
       <div class="actions">

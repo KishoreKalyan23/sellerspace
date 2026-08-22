@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { ProductsService } from '../../shared/services/products/products.service';
+import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 
 @Component({
   selector: 'app-product-form',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, ButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, ButtonComponent],
   templateUrl: './product-form.component.html',
   styleUrl: './product-form.component.css',
 })
@@ -18,11 +19,19 @@ export class ProductFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly productsService = inject(ProductsService);
+  private readonly categoriesService = inject(CategoriesService);
+
+  readonly categories = this.categoriesService.categories;
+
+  @Input() embedded = false;
+  @Output() closed = new EventEmitter<void>();
+  @Output() saved = new EventEmitter<void>();
 
   readonly form = this.fb.group({
     name: ['', [Validators.required]],
     category: ['', [Validators.required]],
     price: [0, [Validators.required, Validators.min(0.01)]],
+    taxPercent: [0, [Validators.required, Validators.min(0), Validators.max(100)]],
     description: [''],
     stockQuantity: [0, [Validators.required, Validators.min(0)]],
   });
@@ -89,6 +98,7 @@ export class ProductFormComponent implements OnInit {
         name: payload.name ?? '',
         category: payload.category ?? '',
         price: Number(payload.price ?? 0),
+        taxPercent: Number(payload.taxPercent ?? 0),
         description: payload.description ?? '',
         stockQuantity: Number(payload.stockQuantity ?? 0),
       };
@@ -98,9 +108,22 @@ export class ProductFormComponent implements OnInit {
         await this.productsService.uploadImages(product.id, this.selectedImages);
       }
       await this.productsService.loadAll();
-      this.router.navigate(['/products']);
+
+      if (this.embedded) {
+        this.saved.emit();
+      } else {
+        this.router.navigate(['/products']);
+      }
     } finally {
       this.isSaving = false;
+    }
+  }
+
+  cancel(): void {
+    if (this.embedded) {
+      this.closed.emit();
+    } else {
+      this.router.navigate(['/products']);
     }
   }
 

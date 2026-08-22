@@ -45,6 +45,14 @@ export const routes: Routes = [
         path: 'settings/vendor-details',
         loadComponent: () => import('./settings/vendor-details/vendor-details.component').then((m) => m.VendorDetailsComponent),
       },
+      {
+        path: 'customers',
+        loadComponent: () => import('./customers/customer-list/customer-list.component').then((m) => m.CustomerListComponent),
+      },
+      {
+        path: 'settings/invoices',
+        loadComponent: () => import('./invoices/invoice-list/invoice-list.component').then((m) => m.InvoiceListComponent),
+      },
       { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
     ],
   },

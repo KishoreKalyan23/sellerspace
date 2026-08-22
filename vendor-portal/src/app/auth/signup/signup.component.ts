@@ -67,6 +67,16 @@ export class SignupComponent {
     );
   }
 
+  get passwordMismatch(): boolean {
+    const values = this.form.getRawValue();
+    return !!(values.confirmPassword && values.password !== values.confirmPassword);
+  }
+
+  showError(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!(control && control.touched && control.invalid);
+  }
+
   next(): void {
     if (this.currentStep === 0 && !this.stepOneValid) {
       this.form.markAllAsTouched();

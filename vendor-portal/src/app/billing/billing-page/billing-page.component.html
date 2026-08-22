@@ -1,4 +1,15 @@
 <section class="billing-page" aria-label="Billing workspace">
-  <app-billing-summary />
-  <app-product-catalog />
+  <app-page-header eyebrow="Checkout" title="Billing" description="Build a bill from your product catalog and review totals before checkout.">
+    <button type="button" class="pro-mode-toggle" [class.active]="isProMode()" (click)="toggleProMode()">
+      <span class="pro-mode-toggle__track"><span class="pro-mode-toggle__thumb"></span></span>
+      Pro mode
+    </button>
+  </app-page-header>
+
+  <div *ngIf="!isProMode()" class="billing-panels">
+    <app-billing-summary />
+    <app-product-catalog />
+  </div>
+
+  <app-pro-billing *ngIf="isProMode()" />
 </section>

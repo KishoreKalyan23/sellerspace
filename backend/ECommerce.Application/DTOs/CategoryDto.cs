@@ -10,3 +10,17 @@ public class CategoryDto
 
     public IReadOnlyList<CategoryDto> Children { get; set; } = Array.Empty<CategoryDto>();
 }
+
+public class CreateCategoryRequestDto
+{
+    public string Name { get; set; } = string.Empty;
+
+    public int? ParentCategoryId { get; set; }
+}
+
+public class UpdateCategoryRequestDto
+{
+    public string Name { get; set; } = string.Empty;
+
+    public int? ParentCategoryId { get; set; }
+}

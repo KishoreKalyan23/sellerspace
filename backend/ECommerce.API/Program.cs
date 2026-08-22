@@ -83,8 +83,26 @@ builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IBillingCustomerService, BillingCustomerService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 var app = builder.Build();
+
+using (var startupScope = app.Services.CreateScope())
+{
+    var dbContext = startupScope.ServiceProvider.GetRequiredService<ECommerceDbContext>();
+    try
+    {
+        await ECommerce.Infrastructure.Seeding.OrderSeeder.SeedAsync(dbContext);
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogWarning(ex, "Skipped order seeding - run 'dotnet ef database update' to create the Orders/OrderItems tables.");
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

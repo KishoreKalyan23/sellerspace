@@ -1,32 +1,65 @@
 <section class="billing-panel" aria-label="Billing summary">
   <header class="billing-panel__header">
     <h1>Billing</h1>
-    <span>{{ billingItems().length }} {{ billingItems().length === 1 ? 'item' : 'items' }}</span>
+    <span class="chip">{{ billingItems().length }} {{ billingItems().length === 1 ? 'item' : 'items' }}</span>
   </header>
 
   <div class="billing-panel__body">
-    <div *ngIf="billingItems().length === 0" class="empty-state">
-      <p>No products added yet.</p>
-      <small>Select items from the catalog to start a bill.</small>
-    </div>
+    <app-empty-state
+      *ngIf="billingItems().length === 0"
+      [bare]="true"
+      [fill]="true"
+      message="No products added yet."
+      hint="Select items from the catalog to start a bill."
+    />
 
     <article *ngFor="let item of billingItems()" class="billing-item">
-      <div class="billing-item__topline">
-        <h2>{{ item.name }}</h2>
-        <button type="button" class="remove-button" (click)="removeItem(item.productId)" [attr.aria-label]="'Remove ' + item.name">×</button>
+      <div class="billing-item__media">
+        <img *ngIf="imageUrl(item.productId) as thumbnailUrl" [src]="thumbnailUrl" [alt]="item.name" />
+        <span *ngIf="!imageUrl(item.productId)" class="billing-item__placeholder" aria-hidden="true">{{ item.name.charAt(0) }}</span>
       </div>
-      <div class="billing-item__details">
-        <div class="quantity-control">
-          <button type="button" (click)="changeQuantity(item.productId, item.quantity - 1)" aria-label="Decrease quantity">−</button>
-          <input type="number" min="1" [value]="item.quantity" (change)="updateQuantity(item.productId, +$any($event.target).value)" aria-label="Quantity" />
-          <button type="button" (click)="changeQuantity(item.productId, item.quantity + 1)" aria-label="Increase quantity">+</button>
+
+      <div class="billing-item__content">
+        <div class="billing-item__topline">
+          <h2>{{ item.name }}</h2>
+          <button type="button" class="remove-button" (click)="removeItem(item.productId)" [attr.aria-label]="'Remove ' + item.name">×</button>
         </div>
-        <strong>{{ item.price * item.quantity | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+        <div class="billing-item__details">
+          <div class="quantity-control">
+            <button type="button" [disabled]="item.quantity <= 1" (click)="changeQuantity(item.productId, item.quantity - 1)" aria-label="Decrease quantity">−</button>
+            <input type="number" min="1" [value]="item.quantity" (change)="updateQuantity(item.productId, +$any($event.target).value)" aria-label="Quantity" />
+            <button type="button" (click)="changeQuantity(item.productId, item.quantity + 1)" aria-label="Increase quantity">+</button>
+          </div>
+          <strong>{{ item.price * item.quantity | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+        </div>
       </div>
     </article>
   </div>
 
   <footer class="billing-panel__footer">
+    <label class="client-name-field" for="billing-client-name">
+      <span>Client name</span>
+      <input
+        id="billing-client-name"
+        type="text"
+        placeholder="Who is this bill for?"
+        [value]="clientName()"
+        (input)="updateClientName($event)"
+      />
+    </label>
+
+    <div class="payment-method-field">
+      <span>Payment method</span>
+      <div class="payment-method-toggle" role="group" aria-label="Payment method">
+        <button type="button" [class.active]="paymentMethod() === 'Cash'" (click)="setPaymentMethod('Cash')">Cash</button>
+        <button type="button" [class.active]="paymentMethod() === 'Card'" (click)="setPaymentMethod('Card')">Card</button>
+        <button type="button" [class.active]="paymentMethod() === 'UPI'" (click)="setPaymentMethod('UPI')">UPI</button>
+      </div>
+    </div>
+
+    <p *ngIf="checkoutError()" class="checkout-message checkout-message--error">{{ checkoutError() }}</p>
+    <p *ngIf="checkoutSuccess()" class="checkout-message checkout-message--success">{{ checkoutSuccess() }}</p>
+
     <div class="total-row">
       <span>Subtotal</span>
       <strong>{{ subtotal() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
@@ -35,6 +68,9 @@
       <span>Total</span>
       <strong>{{ total() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
     </div>
-    <button class="checkout-button" type="button" [disabled]="billingItems().length === 0">Checkout</button>
+    <app-button type="button" size="sm" [fullWidth]="true" [disabled]="!canCheckout()" (click)="checkout()">
+      {{ isCheckingOut() ? 'Placing order…' : 'Checkout' }}
+      <span aria-hidden="true">→</span>
+    </app-button>
   </footer>
 </section>

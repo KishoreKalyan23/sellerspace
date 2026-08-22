@@ -1,5 +1,6 @@
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, computed, inject, signal } from '@angular/core';
+import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
 export interface Vendor {
@@ -25,6 +26,11 @@ interface ApiResponse<T> {
   errors?: string[];
 }
 
+interface StoredSession {
+  token: string;
+  vendor: Vendor;
+}
+
 interface AuthResult {
   vendorId: number;
   name: string;
@@ -47,11 +53,17 @@ interface AuthResult {
 })
 export class AuthService {
   private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly baseUrl = 'https://localhost:55142';
+  private readonly storageKey = 'vendor-portal.session';
 
   readonly currentVendor = signal<Vendor | null>(null);
   readonly jwt = signal<string | null>(null);
   readonly isLoggedIn = computed(() => !!this.jwt() || !!this.currentVendor());
+
+  constructor() {
+    this.restoreSession();
+  }
 
   async login(email: string, password: string): Promise<boolean> {
     try {
@@ -67,8 +79,7 @@ export class AuthService {
         return false;
       }
 
-      this.jwt.set(payload.token);
-      this.currentVendor.set({
+      const vendor: Vendor = {
         id: String(payload.vendorId),
         name: payload.name,
         email,
@@ -83,7 +94,11 @@ export class AuthService {
         country: payload.country,
         latitude: payload.latitude,
         longitude: payload.longitude,
-      });
+      };
+
+      this.jwt.set(payload.token);
+      this.currentVendor.set(vendor);
+      this.persistSession(payload.token, vendor);
 
       return true;
     } catch {
@@ -132,8 +147,7 @@ export class AuthService {
         return false;
       }
 
-      this.jwt.set(payload.token);
-      this.currentVendor.set({
+      const vendor: Vendor = {
         id: String(payload.vendorId),
         name: payload.name,
         email: input.email,
@@ -148,7 +162,11 @@ export class AuthService {
         country: payload.country,
         latitude: payload.latitude,
         longitude: payload.longitude,
-      });
+      };
+
+      this.jwt.set(payload.token);
+      this.currentVendor.set(vendor);
+      this.persistSession(payload.token, vendor);
 
       return true;
     } catch {
@@ -159,9 +177,47 @@ export class AuthService {
   logout(): void {
     this.jwt.set(null);
     this.currentVendor.set(null);
+    this.clearSession();
   }
 
   requestPasswordReset(): Promise<boolean> {
     return Promise.resolve(true);
+  }
+
+  private restoreSession(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    try {
+      const raw = localStorage.getItem(this.storageKey);
+      if (!raw) {
+        return;
+      }
+
+      const stored = JSON.parse(raw) as StoredSession;
+      if (stored?.token && stored?.vendor) {
+        this.jwt.set(stored.token);
+        this.currentVendor.set(stored.vendor);
+      }
+    } catch {
+      localStorage.removeItem(this.storageKey);
+    }
+  }
+
+  private persistSession(token: string, vendor: Vendor): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    localStorage.setItem(this.storageKey, JSON.stringify({ token, vendor }));
+  }
+
+  private clearSession(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    localStorage.removeItem(this.storageKey);
   }
 }

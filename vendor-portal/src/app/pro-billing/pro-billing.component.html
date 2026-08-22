@@ -1,0 +1,168 @@
+<section class="pro-billing" aria-label="Pro billing">
+  <section class="panel line-items-panel">
+    <div class="panel-header">
+      <h2>Bill items</h2>
+
+      <div class="product-search-wrap">
+        <input
+          [id]="productSearchInputId"
+          type="text"
+          class="product-search-input"
+          placeholder="Search product ID or name…"
+          role="combobox"
+          aria-expanded="{{ productMatches().length > 0 }}"
+          aria-autocomplete="list"
+          [value]="productQuery()"
+          (input)="onProductQuery($event)"
+          (keydown)="onProductSearchKeydown($event)"
+        />
+
+        <ul *ngIf="productMatches().length" class="product-dropdown" role="listbox">
+          <li *ngFor="let product of productMatches(); let i = index" role="option" [attr.aria-selected]="i === highlightedIndex()">
+            <button
+              type="button"
+              [class.active]="i === highlightedIndex()"
+              [disabled]="product.stockQuantity === 0"
+              (mouseenter)="highlightedIndex.set(i)"
+              (click)="addProduct(product)"
+            >
+              <span class="product-dropdown__id">#{{ product.id }}</span>
+              <strong>{{ product.name }}</strong>
+              <span>{{ product.price | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</span>
+              <span [class.product-dropdown__out]="product.stockQuantity === 0">
+                {{ product.stockQuantity === 0 ? 'Out of stock' : product.stockQuantity + ' in stock' }}
+              </span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <app-empty-state
+      *ngIf="lineItems().length === 0"
+      [bare]="true"
+      message="No products added yet."
+      hint="Search a product above to add it to this bill."
+    />
+
+    <div *ngIf="lineItems().length > 0" class="line-items-table-wrap">
+      <table class="line-items-table">
+        <thead>
+          <tr>
+            <th>Product ID</th>
+            <th>Product name</th>
+            <th>Qty</th>
+            <th>Price/unit</th>
+            <th>Tax %</th>
+            <th>Line total</th>
+            <th>Tax amt</th>
+            <th>Total (incl. tax)</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let line of lineItems()">
+            <td>#{{ line.productId }}</td>
+            <td>{{ line.name }}</td>
+            <td>
+              <input
+                [id]="'pro-billing-qty-' + line.productId"
+                type="number"
+                min="1"
+                [max]="line.stockAvailable"
+                [value]="line.quantity"
+                (change)="updateLineQuantity(line.productId, +$any($event.target).value)"
+                (keydown.enter)="onQuantityEnter($event, line.productId)"
+                (keydown.tab)="onQuantityTab($event, line.productId)"
+                aria-label="Quantity"
+              />
+            </td>
+            <td>{{ line.unitPrice | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+            <td class="static-tax">{{ line.taxPercent }}%</td>
+            <td>{{ lineSubtotal(line) | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+            <td>{{ lineTax(line) | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+            <td>{{ lineTotal(line) | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</td>
+            <td>
+              <button type="button" class="remove-button" (click)="removeLine(line.productId)" [attr.aria-label]="'Remove ' + line.name">×</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel payment-panel">
+    <h2>Complete billing</h2>
+
+    <div class="field-row">
+      <label class="field">
+        <span>Mobile number</span>
+        <input [id]="customerMobileInputId" type="tel" placeholder="10-digit mobile" [value]="customerMobile()" (input)="onMobileInput($event)" />
+      </label>
+      <label class="field">
+        <span>Name</span>
+        <input type="text" placeholder="Customer name" [value]="customerName()" (input)="onNameInput($event)" />
+      </label>
+      <label class="field">
+        <span>Email (optional)</span>
+        <input type="email" placeholder="name@example.com" [value]="customerEmail()" (input)="onEmailInput($event)" />
+      </label>
+    </div>
+
+    <ul *ngIf="customerSuggestions().length" class="suggestion-list">
+      <li *ngFor="let suggestion of customerSuggestions()">
+        <button type="button" (click)="selectCustomer(suggestion)">
+          <strong>{{ suggestion.name }}</strong>
+          <span>{{ suggestion.mobile }}<ng-container *ngIf="suggestion.email"> · {{ suggestion.email }}</ng-container></span>
+        </button>
+      </li>
+    </ul>
+
+    <div class="totals">
+      <div class="total-row">
+        <span>Subtotal</span>
+        <strong>{{ subtotal() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+      </div>
+      <div class="total-row">
+        <span>Total tax</span>
+        <strong>{{ totalTax() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+      </div>
+      <div class="total-row total-row--final">
+        <span>Grand total</span>
+        <strong>{{ grandTotal() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+      </div>
+    </div>
+
+    <div class="payment-method-field">
+      <span>Payment method</span>
+      <div class="payment-method-toggle" role="group" aria-label="Payment method">
+        <button type="button" [class.active]="paymentMethod() === 'Cash'" (click)="setPaymentMethod('Cash')">Cash</button>
+        <button type="button" [class.active]="paymentMethod() === 'Card'" (click)="setPaymentMethod('Card')">Card</button>
+        <button type="button" [class.active]="paymentMethod() === 'UPI'" (click)="setPaymentMethod('UPI')">UPI</button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="paymentMethod() === 'Cash'">
+      <label class="field amount-received">
+        <span>Amount received</span>
+        <input type="number" min="0" step="0.01" [value]="amountReceived()" (input)="onAmountReceivedInput($event)" />
+      </label>
+
+      <p class="balance" [class.balance--short]="balance() < 0">
+        <ng-container *ngIf="balance() >= 0">
+          Balance to return: <strong>{{ balance() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+        </ng-container>
+        <ng-container *ngIf="balance() < 0">
+          Short by <strong>{{ -balance() | currency:'INR':'symbol-narrow':'1.2-2':'en-IN' }}</strong>
+        </ng-container>
+      </p>
+    </ng-container>
+
+    <p *ngIf="checkoutError()" class="checkout-message checkout-message--error">{{ checkoutError() }}</p>
+    <p *ngIf="checkoutSuccess()" class="checkout-message checkout-message--success">{{ checkoutSuccess() }}</p>
+
+    <app-button type="button" [fullWidth]="true" [disabled]="!canCheckout()" (click)="checkout()">
+      {{ isSubmitting() ? 'Placing order…' : 'Complete billing' }}
+    </app-button>
+  </section>
+</section>

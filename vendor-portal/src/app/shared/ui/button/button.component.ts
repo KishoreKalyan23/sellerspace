@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, HostBinding, Input } from '@angular/core';
 
 @Component({
   selector: 'app-button',
@@ -9,5 +9,7 @@ import { Component, Input } from '@angular/core';
 export class ButtonComponent {
   @Input() type: 'button' | 'submit' = 'button';
   @Input() variant: 'primary' | 'secondary' | 'ghost' = 'primary';
+  @Input() size: 'md' | 'sm' = 'md';
   @Input() disabled = false;
+  @Input() @HostBinding('class.full-width') fullWidth = false;
 }

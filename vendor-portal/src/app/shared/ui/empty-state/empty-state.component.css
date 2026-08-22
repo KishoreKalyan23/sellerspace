@@ -1,0 +1,48 @@
+:host {
+  display: block;
+  grid-column: 1 / -1;
+}
+
+:host(.fill) {
+  display: grid;
+  place-content: center;
+  min-height: 100%;
+}
+
+.empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+:host(:not(.bare)) .empty-state {
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 1.5rem;
+}
+
+:host(.bare) .empty-state {
+  padding: 1rem 0.5rem;
+}
+
+.empty-state__icon {
+  font-size: 1.75rem;
+  color: var(--color-accent);
+  margin-bottom: 0.25rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--color-text);
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.empty-state small {
+  max-width: 20rem;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}

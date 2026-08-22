@@ -18,11 +18,16 @@ export class AppShellComponent {
 
   readonly isSidebarCollapsed = signal(false);
   readonly isSettingsOpen = signal(false);
+  readonly isLogoutConfirmOpen = signal(false);
 
   constructor() {
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
-      .subscribe((event) => this.isSettingsOpen.set(event.urlAfterRedirects.startsWith('/settings')));
+      .subscribe((event) =>
+        this.isSettingsOpen.set(
+          event.urlAfterRedirects.startsWith('/settings') || event.urlAfterRedirects.startsWith('/customers'),
+        ),
+      );
   }
 
   toggleSidebar(): void {
@@ -33,7 +38,16 @@ export class AppShellComponent {
     this.isSettingsOpen.set(!this.isSettingsOpen());
   }
 
-  logout(): void {
+  requestLogout(): void {
+    this.isLogoutConfirmOpen.set(true);
+  }
+
+  cancelLogout(): void {
+    this.isLogoutConfirmOpen.set(false);
+  }
+
+  confirmLogout(): void {
+    this.isLogoutConfirmOpen.set(false);
     this.authService.logout();
     this.router.navigate(['/login']);
   }

@@ -14,23 +14,25 @@
   <div class="summary-grid">
     <article class="stat-card highlight">
       <span class="label">Net revenue</span>
-      <strong>{{ netRevenue() }}</strong>
-      <small class="trend up">+18.2% vs last month</small>
+      <strong>{{ netRevenue() | currency:'INR':'symbol-narrow':'1.0-0':'en-IN' }}</strong>
+      <small class="trend" [class.up]="netRevenueWeekOverWeekChange() >= 0" [class.steady]="netRevenueWeekOverWeekChange() < 0">
+        {{ netRevenueWeekOverWeekChange() >= 0 ? '+' : '' }}{{ netRevenueWeekOverWeekChange() }}% vs last week
+      </small>
     </article>
     <article class="stat-card">
       <span class="label">Orders today</span>
       <strong>{{ ordersToday() }}</strong>
-      <small class="trend up">+9 new this hour</small>
+      <small class="trend steady">{{ ordersThisWeek() }} this week</small>
     </article>
     <article class="stat-card">
       <span class="label">Active listings</span>
       <strong>{{ activeListings() }}</strong>
-      <small class="trend steady">12 low-stock alerts</small>
+      <small class="trend steady">{{ lowStockListings() }} low-stock alert{{ lowStockListings() === 1 ? '' : 's' }}</small>
     </article>
     <article class="stat-card">
       <span class="label">Fulfillment rate</span>
-      <strong>{{ fulfillmentRate() }}</strong>
-      <small class="trend up">18 shipments dispatched</small>
+      <strong>{{ fulfillmentRate() }}%</strong>
+      <small class="trend steady">{{ outOfStockListings() }} out of stock</small>
     </article>
   </div>
 
@@ -39,24 +41,22 @@
     <div class="skeleton-list"></div>
   </div>
 
-  <div *ngIf="!isLoading() && error()" class="empty-state">
-    <p>{{ error() }}</p>
-  </div>
+  <app-empty-state *ngIf="!isLoading() && error()" [message]="error() ?? ''" />
 
   <div *ngIf="!isLoading() && !error()" class="content">
     <div class="stat-row">
       <article class="stat-card stat-card-large">
-        <p class="label">Total registered clients</p>
-        <div class="value price-tag">{{ totalClients() }}</div>
+        <p class="label">Total clients billed</p>
+        <div class="value">{{ totalClients() }}</div>
       </article>
 
       <article class="stat-card stat-card-large secondary-panel">
-        <p class="label">Marketplace pulse</p>
+        <p class="label">Average order value</p>
         <div class="mini-metric">
-          <strong>3.6%</strong>
-          <span>conversion uplift</span>
+          <strong>{{ averageOrderValue() | currency:'INR':'symbol-narrow':'1.0-0':'en-IN' }}</strong>
+          <span>per order</span>
         </div>
-        <small class="trend up">Compared to the previous week</small>
+        <small class="trend steady">Based on all orders to date</small>
       </article>
     </div>
 
@@ -68,43 +68,33 @@
         </div>
 
         <div class="chart-bars" aria-label="Revenue chart">
-          <span class="bar" *ngFor="let value of revenueTrend()" [style.height.%]="value"></span>
+          <span class="bar" *ngFor="let value of revenueChartBars()" [style.height.%]="value"></span>
         </div>
 
         <div class="chart-legend">
-          <span>Jan</span>
-          <span>Feb</span>
-          <span>Mar</span>
-          <span>Apr</span>
-          <span>May</span>
-          <span>Jun</span>
-          <span>Jul</span>
-          <span>Aug</span>
-          <span>Sep</span>
-          <span>Oct</span>
-          <span>Nov</span>
-          <span>Dec</span>
+          <span>12 weeks ago</span>
+          <span>This week</span>
         </div>
       </article>
 
       <article class="panel health-panel">
         <div class="panel-header">
-          <h2>Operational health</h2>
-          <span class="pill">Stable</span>
+          <h2>Inventory health</h2>
+          <span class="pill">{{ inventoryStatus() }}</span>
         </div>
 
         <div class="health-list">
           <div class="health-item">
-            <span>Inventory variance</span>
-            <strong>2.1%</strong>
+            <span>Active listings</span>
+            <strong>{{ activeListings() }}</strong>
           </div>
           <div class="health-item">
-            <span>Returns rate</span>
-            <strong>1.4%</strong>
+            <span>Low stock (&lt; 10 units)</span>
+            <strong>{{ lowStockListings() }}</strong>
           </div>
           <div class="health-item">
-            <span>Shipping SLA</span>
-            <strong>96%</strong>
+            <span>Out of stock</span>
+            <strong>{{ outOfStockListings() }}</strong>
           </div>
         </div>
       </article>
@@ -114,12 +104,10 @@
       <section class="panel">
         <div class="panel-header">
           <h2>Most active clients</h2>
-          <span class="pill">Updated 12 mins ago</span>
+          <span class="pill">All-time</span>
         </div>
 
-        <div *ngIf="mostActiveClients().length === 0" class="empty-state">
-          <p>No client activity yet</p>
-        </div>
+        <app-empty-state *ngIf="mostActiveClients().length === 0" [bare]="true" message="No client activity yet" />
 
         <table *ngIf="mostActiveClients().length > 0" class="client-table">
           <thead>
@@ -142,8 +130,10 @@
       <aside class="panel">
         <div class="panel-header">
           <h2>Best sellers</h2>
-          <span class="pill">This month</span>
+          <span class="pill">All-time</span>
         </div>
+
+        <app-empty-state *ngIf="bestSellingProducts().length === 0" [bare]="true" message="No sales yet" />
 
         <div class="product-momentum">
           <div class="momentum-row" *ngFor="let product of bestSellingProducts()">
@@ -152,8 +142,8 @@
               <small>{{ product.units }} units sold</small>
             </div>
             <div class="momentum-meta">
-              <span class="revenue">{{ product.revenue }}</span>
-              <span class="trend up">{{ product.trend }}</span>
+              <span class="revenue">{{ product.revenue | currency:'INR':'symbol-narrow':'1.0-0':'en-IN' }}</span>
+              <span class="trend up">{{ product.revenueSharePercent }}% of top sellers</span>
             </div>
           </div>
         </div>

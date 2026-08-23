@@ -1,9 +1,7 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
 
-import { AuthService } from '../shared/services/auth/auth.service';
 import { EmptyStateComponent } from '../shared/ui/empty-state/empty-state.component';
 
 interface ClientActivity {
@@ -46,8 +44,6 @@ interface DashboardSummaryResponse {
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
   private readonly http = inject(HttpClient);
 
   readonly totalClients = signal(0);
@@ -88,11 +84,6 @@ export class DashboardComponent {
 
   toggleSidebar(): void {
     this.isSidebarCollapsed.set(!this.isSidebarCollapsed());
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
   }
 
   private applySummary(data: DashboardSummaryResponse['data']): void {

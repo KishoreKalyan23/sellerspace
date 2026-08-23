@@ -32,6 +32,6 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
         builder.HasMany(v => v.Products)
             .WithOne(p => p.Vendor)
             .HasForeignKey(p => p.VendorId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

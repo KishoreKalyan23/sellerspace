@@ -1,0 +1,76 @@
+:host {
+  display: block;
+}
+
+.shops-page {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(27, 31, 42, 0.06);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem;
+}
+
+.loading-state {
+  color: var(--color-text-secondary);
+  font-size: 0.85rem;
+  padding: 1rem 0;
+}
+
+.shop-table-wrap {
+  overflow-x: auto;
+}
+
+.shop-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.shop-table thead th {
+  text-align: left;
+  padding: 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--color-text-secondary);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.shop-table tbody td {
+  padding: 0.75rem 0.6rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.shop-table tbody tr:hover {
+  background: rgba(31, 58, 92, 0.02);
+}
+
+.status-tag {
+  display: inline-flex;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(198, 62, 62, 0.1);
+  color: var(--color-error);
+}
+
+.status-tag--approved {
+  background: rgba(46, 125, 50, 0.12);
+  color: #2e7d32;
+}
+
+.link-button {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}

@@ -13,6 +13,10 @@ export const serverRoutes: ServerRoute[] = [
     path: 'forgot-password',
     renderMode: RenderMode.Prerender,
   },
+  {
+    path: 'superadmin/setup',
+    renderMode: RenderMode.Client,
+  },
   // Everything below depends on the auth session, which lives in the
   // browser's localStorage. SSR/prerendering has no access to it, so
   // building these server-side would bake in a logged-out redirect
@@ -48,6 +52,22 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'settings/invoices',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'settings/sales-report',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'settings/users',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'superadmin/shops',
+    renderMode: RenderMode.Client,
+  },
+  {
+    path: 'superadmin/shops/:vendorId',
     renderMode: RenderMode.Client,
   },
   {

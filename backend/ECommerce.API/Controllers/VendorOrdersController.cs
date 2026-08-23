@@ -22,6 +22,11 @@ public class VendorOrdersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<ApiResponse<OrderSummaryDto>>> Checkout([FromBody] CheckoutRequestDto request)
     {
+        if (!HasBillingAccess())
+        {
+            return Forbid();
+        }
+
         var vendorId = GetVendorIdFromClaims();
 
         try
@@ -46,6 +51,11 @@ public class VendorOrdersController : ControllerBase
     [HttpPost("{id:int}/return")]
     public async Task<ActionResult<ApiResponse<OrderSummaryDto>>> Return(int id)
     {
+        if (!HasBillingAccess())
+        {
+            return Forbid();
+        }
+
         var vendorId = GetVendorIdFromClaims();
 
         try
@@ -69,12 +79,22 @@ public class VendorOrdersController : ControllerBase
 
     private int GetVendorIdFromClaims()
     {
-        var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("VendorId");
+        var claimValue = User.FindFirstValue("VendorId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (int.TryParse(claimValue, out var vendorId))
         {
             return vendorId;
         }
 
         throw new InvalidOperationException("VendorId claim not found.");
+    }
+
+    private bool HasBillingAccess()
+    {
+        if (!User.IsInRole("ShopUser"))
+        {
+            return true;
+        }
+
+        return User.FindFirstValue("CanAccessBilling") == "true";
     }
 }

@@ -24,6 +24,6 @@ public class BillingCustomerConfiguration : IEntityTypeConfiguration<BillingCust
         builder.HasOne(c => c.Vendor)
             .WithMany()
             .HasForeignKey(c => c.VendorId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

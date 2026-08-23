@@ -7,8 +7,8 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <label class="field">
-        <span>Email</span>
-        <input type="email" formControlName="email" placeholder="you@vendor.com" />
+        <span>Email or Login ID</span>
+        <input type="text" formControlName="email" placeholder="you@vendor.com or your login ID" autocomplete="username" />
       </label>
 
       <label class="field">

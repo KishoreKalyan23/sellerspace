@@ -53,17 +53,6 @@ public class VendorService : IVendorService
         return CreateTokenResponse(created);
     }
 
-    public async Task<VendorAuthResultDto> LoginAsync(VendorLoginRequestDto request, CancellationToken cancellationToken = default)
-    {
-        var vendor = await _vendorRepository.GetByEmailAsync(request.Email);
-        if (vendor is null || !BCrypt.Net.BCrypt.Verify(request.Password, vendor.PasswordHash))
-        {
-            throw new UnauthorizedAccessException("Invalid email or password.");
-        }
-
-        return CreateTokenResponse(vendor);
-    }
-
     private VendorAuthResultDto CreateTokenResponse(Vendor vendor)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? string.Empty));
@@ -73,7 +62,8 @@ public class VendorService : IVendorService
         {
             new(ClaimTypes.NameIdentifier, vendor.Id.ToString()),
             new("VendorId", vendor.Id.ToString()),
-            new(ClaimTypes.Role, "Vendor")
+            new(ClaimTypes.Role, "Vendor"),
+            new(ClaimTypes.Role, "ShopAdmin")
         };
 
         var token = new JwtSecurityToken(
@@ -98,6 +88,7 @@ public class VendorService : IVendorService
             Country = vendor.Country,
             Latitude = vendor.Latitude,
             Longitude = vendor.Longitude,
+            Role = "ShopAdmin",
             Token = new JwtSecurityTokenHandler().WriteToken(token)
         };
     }

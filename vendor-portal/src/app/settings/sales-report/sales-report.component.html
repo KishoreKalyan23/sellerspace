@@ -1,0 +1,105 @@
+<section class="sales-report-page" aria-label="Sales report">
+  <app-page-header
+    eyebrow="Reports"
+    title="Sales report"
+    description="Total sales for a day or a custom date range, broken down by payment method."
+  >
+    <app-button type="button" variant="secondary" size="sm" [disabled]="!report() || isExporting()" (click)="exportExcel()">
+      {{ isExporting() ? 'Exporting…' : 'Export Excel' }}
+    </app-button>
+    <app-button type="button" size="sm" [disabled]="!report()" (click)="exportPdf()">Export PDF</app-button>
+  </app-page-header>
+
+  <section class="panel filters">
+    <div class="mode-toggle" role="group" aria-label="Report mode">
+      <button type="button" class="mode-option" [class.active]="mode() === 'day'" (click)="setMode('day')">Single day</button>
+      <button type="button" class="mode-option" [class.active]="mode() === 'range'" (click)="setMode('range')">Date range</button>
+    </div>
+
+    <div class="date-fields" *ngIf="mode() === 'day'">
+      <label class="field">
+        <span>Date</span>
+        <input type="date" [value]="selectedDate()" (change)="onDateInput($event)" (change)="loadReport()" />
+      </label>
+    </div>
+
+    <div class="date-fields" *ngIf="mode() === 'range'">
+      <label class="field">
+        <span>From</span>
+        <input type="date" [value]="rangeStart()" (change)="onRangeStartInput($event)" (change)="loadReport()" />
+      </label>
+      <label class="field">
+        <span>To</span>
+        <input type="date" [value]="rangeEnd()" (change)="onRangeEndInput($event)" (change)="loadReport()" />
+      </label>
+    </div>
+  </section>
+
+  <div *ngIf="isLoading()" class="loading-state">Loading sales report…</div>
+  <p *ngIf="error()" class="form-error">{{ error() }}</p>
+
+  <ng-container *ngIf="!isLoading() && report() as data">
+    <section class="stat-grid">
+      <article class="stat-card highlight">
+        <span class="stat-label">Total sales</span>
+        <strong class="stat-value">₹{{ data.totalSales.toFixed(2) }}</strong>
+        <span class="stat-sub">{{ data.totalOrders }} order(s)</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Cash</span>
+        <strong class="stat-value">₹{{ paymentAmount('Cash').toFixed(2) }}</strong>
+        <span class="stat-sub">{{ paymentCount('Cash') }} order(s)</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">UPI</span>
+        <strong class="stat-value">₹{{ paymentAmount('UPI').toFixed(2) }}</strong>
+        <span class="stat-sub">{{ paymentCount('UPI') }} order(s)</span>
+      </article>
+      <article class="stat-card">
+        <span class="stat-label">Card</span>
+        <strong class="stat-value">₹{{ paymentAmount('Card').toFixed(2) }}</strong>
+        <span class="stat-sub">{{ paymentCount('Card') }} order(s)</span>
+      </article>
+      <article class="stat-card stat-card--muted">
+        <span class="stat-label">Returned</span>
+        <strong class="stat-value">₹{{ data.returnedAmount.toFixed(2) }}</strong>
+        <span class="stat-sub">{{ data.returnedOrders }} order(s)</span>
+      </article>
+    </section>
+
+    <section class="panel">
+      <app-empty-state *ngIf="data.lines.length === 0" message="No orders in this date range." />
+
+      <div *ngIf="data.lines.length > 0" class="statement-table-wrap">
+        <table class="statement-table">
+          <thead>
+            <tr>
+              <th>Order</th>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Payment</th>
+              <th>Status</th>
+              <th>Subtotal</th>
+              <th>Tax</th>
+              <th>Grand total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let line of data.lines">
+              <td>#{{ line.orderId }}</td>
+              <td>{{ line.createdAt | date: 'medium' }}</td>
+              <td>{{ line.clientName }}</td>
+              <td>{{ line.paymentMethod }}</td>
+              <td>
+                <span class="status-tag" [class.status-tag--returned]="line.status === 'Returned'">{{ line.status }}</span>
+              </td>
+              <td>₹{{ line.totalAmount.toFixed(2) }}</td>
+              <td>₹{{ line.taxAmount.toFixed(2) }}</td>
+              <td>₹{{ line.grandTotal.toFixed(2) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </ng-container>
+</section>

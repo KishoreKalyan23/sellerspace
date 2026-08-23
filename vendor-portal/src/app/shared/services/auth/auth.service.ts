@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+export type UserRole = 'SuperAdmin' | 'ShopAdmin' | 'ShopUser';
+
 export interface Vendor {
   id: string;
   name: string;
@@ -18,6 +20,8 @@ export interface Vendor {
   country?: string;
   latitude?: number;
   longitude?: number;
+  role: UserRole;
+  canAccessBilling?: boolean;
 }
 
 interface ApiResponse<T> {
@@ -31,7 +35,7 @@ interface StoredSession {
   vendor: Vendor;
 }
 
-interface AuthResult {
+export interface AuthResult {
   vendorId: number;
   name: string;
   storeName: string;
@@ -46,6 +50,8 @@ interface AuthResult {
   latitude?: number;
   longitude?: number;
   token: string;
+  role: UserRole;
+  canAccessBilling?: boolean;
 }
 
 @Injectable({
@@ -60,6 +66,14 @@ export class AuthService {
   readonly currentVendor = signal<Vendor | null>(null);
   readonly jwt = signal<string | null>(null);
   readonly isLoggedIn = computed(() => !!this.jwt() || !!this.currentVendor());
+  readonly role = computed<UserRole | null>(() => this.currentVendor()?.role ?? null);
+  readonly isSuperAdmin = computed(() => this.role() === 'SuperAdmin');
+  readonly isShopAdmin = computed(() => this.role() === 'ShopAdmin');
+  readonly isShopUser = computed(() => this.role() === 'ShopUser');
+  readonly canAccessBilling = computed(() => {
+    const vendor = this.currentVendor();
+    return vendor?.role !== 'ShopUser' || vendor.canAccessBilling === true;
+  });
 
   constructor() {
     this.restoreSession();
@@ -79,31 +93,36 @@ export class AuthService {
         return false;
       }
 
-      const vendor: Vendor = {
-        id: String(payload.vendorId),
-        name: payload.name,
-        email,
-        storeName: payload.storeName,
-        mobile: payload.mobile,
-        alternateMobile: payload.alternateMobile,
-        gstNumber: payload.gstNumber,
-        buildingNumber: payload.buildingNumber,
-        streetName: payload.streetName,
-        district: payload.district,
-        state: payload.state,
-        country: payload.country,
-        latitude: payload.latitude,
-        longitude: payload.longitude,
-      };
-
-      this.jwt.set(payload.token);
-      this.currentVendor.set(vendor);
-      this.persistSession(payload.token, vendor);
-
+      this.applySession(payload, email);
       return true;
     } catch {
       return false;
     }
+  }
+
+  applySession(payload: AuthResult, email: string): void {
+    const vendor: Vendor = {
+      id: String(payload.vendorId),
+      name: payload.name,
+      email,
+      storeName: payload.storeName,
+      mobile: payload.mobile,
+      alternateMobile: payload.alternateMobile,
+      gstNumber: payload.gstNumber,
+      buildingNumber: payload.buildingNumber,
+      streetName: payload.streetName,
+      district: payload.district,
+      state: payload.state,
+      country: payload.country,
+      latitude: payload.latitude,
+      longitude: payload.longitude,
+      role: payload.role,
+      canAccessBilling: payload.canAccessBilling,
+    };
+
+    this.jwt.set(payload.token);
+    this.currentVendor.set(vendor);
+    this.persistSession(payload.token, vendor);
   }
 
   async register(input: {
@@ -147,27 +166,7 @@ export class AuthService {
         return false;
       }
 
-      const vendor: Vendor = {
-        id: String(payload.vendorId),
-        name: payload.name,
-        email: input.email,
-        storeName: payload.storeName,
-        mobile: payload.mobile,
-        alternateMobile: payload.alternateMobile,
-        gstNumber: payload.gstNumber,
-        buildingNumber: payload.buildingNumber,
-        streetName: payload.streetName,
-        district: payload.district,
-        state: payload.state,
-        country: payload.country,
-        latitude: payload.latitude,
-        longitude: payload.longitude,
-      };
-
-      this.jwt.set(payload.token);
-      this.currentVendor.set(vendor);
-      this.persistSession(payload.token, vendor);
-
+      this.applySession(payload, input.email);
       return true;
     } catch {
       return false;

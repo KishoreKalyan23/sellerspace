@@ -19,7 +19,7 @@ export class LoginComponent {
   private readonly router = inject(Router);
 
   readonly form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: ['', [Validators.required]],
     password: ['', [Validators.required]],
   });
 
@@ -29,7 +29,7 @@ export class LoginComponent {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      this.errorMessage = 'Invalid email or password';
+      this.errorMessage = 'Invalid email/login ID or password';
       return;
     }
 
@@ -37,11 +37,12 @@ export class LoginComponent {
     const loginSucceeded = await this.authService.login(email ?? '', password ?? '');
 
     if (!loginSucceeded) {
-      this.errorMessage = 'Invalid email or password';
+      this.errorMessage = 'Invalid email/login ID or password';
       return;
     }
 
-    const returnUrl = this.router.routerState.snapshot.root.queryParamMap.get('returnUrl') || '/dashboard';
+    const defaultUrl = this.authService.isSuperAdmin() ? '/superadmin/shops' : '/dashboard';
+    const returnUrl = this.router.routerState.snapshot.root.queryParamMap.get('returnUrl') || defaultUrl;
     this.router.navigateByUrl(returnUrl);
   }
 }

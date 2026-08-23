@@ -8,5 +8,7 @@ public interface IVendorRepository
 
     Task<Vendor?> GetByEmailAsync(string email);
 
+    Task<IReadOnlyList<Vendor>> GetAllAsync();
+
     Task<Vendor> AddAsync(Vendor vendor);
 }

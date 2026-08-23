@@ -1,0 +1,124 @@
+<section class="shop-users-page" aria-label="Shop users">
+  <app-page-header
+    eyebrow="Team"
+    title="Shop users"
+    description="Staff accounts scoped to your shop. Control who can see billing."
+  >
+    <app-button type="button" size="sm" (click)="openAddModal()">+ Add user</app-button>
+  </app-page-header>
+
+  <section class="panel">
+    <div *ngIf="isLoading()" class="loading-state">Loading users…</div>
+
+    <app-empty-state
+      *ngIf="!isLoading() && shopUsers().length === 0"
+      message="No shop users yet."
+      hint="Add a user to give someone limited, view-only access to your shop."
+    />
+
+    <div *ngIf="!isLoading() && shopUsers().length > 0" class="user-table-wrap">
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Login ID</th>
+            <th>Billing access</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let user of shopUsers()">
+            <td>{{ user.name }}</td>
+            <td>{{ user.loginId }}</td>
+            <td>
+              <button type="button" class="toggle-chip" [class.toggle-chip--on]="user.canAccessBilling" (click)="toggleBillingAccess(user)">
+                {{ user.canAccessBilling ? 'Allowed' : 'Blocked' }}
+              </button>
+            </td>
+            <td>
+              <button type="button" class="toggle-chip" [class.toggle-chip--on]="user.isActive" (click)="toggleActive(user)">
+                {{ user.isActive ? 'Active' : 'Deactivated' }}
+              </button>
+            </td>
+            <td>
+              <button type="button" class="link-button" (click)="openResetPasswordModal(user)">Reset password</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div *ngIf="isAddModalOpen()" class="modal-backdrop">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="add-shop-user-title">
+      <button type="button" class="modal-close" (click)="closeAddModal()" aria-label="Close">×</button>
+
+      <header class="modal-header">
+        <h1 id="add-shop-user-title">Add shop user</h1>
+      </header>
+
+      <div class="modal-scroll">
+        <div class="user-form">
+          <label class="field">
+            <span>Name</span>
+            <input type="text" [value]="name()" (input)="onNameInput($event)" placeholder="Full name" />
+          </label>
+          <label class="field">
+            <span>Login ID</span>
+            <input type="text" [value]="loginId()" (input)="onLoginIdInput($event)" placeholder="e.g. an employee ID like 34567, or an email" />
+          </label>
+          <label class="field">
+            <span>Email (optional)</span>
+            <input type="email" [value]="email()" (input)="onEmailInput($event)" placeholder="name@example.com" />
+          </label>
+          <label class="field">
+            <span>Password</span>
+            <input type="password" [value]="password()" (input)="onPasswordInput($event)" placeholder="At least 8 characters" />
+          </label>
+          <label class="checkbox-field">
+            <input type="checkbox" [checked]="canAccessBilling()" (change)="toggleCanAccessBilling()" />
+            <span>Allow billing access</span>
+          </label>
+
+          <p *ngIf="formError()" class="form-error">{{ formError() }}</p>
+
+          <div class="actions">
+            <app-button type="button" variant="secondary" (click)="closeAddModal()">Cancel</app-button>
+            <app-button type="button" [disabled]="isSaving()" (click)="save()">
+              {{ isSaving() ? 'Saving…' : 'Save user' }}
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="resetPasswordUserId() !== null" class="modal-backdrop">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reset-password-title">
+      <button type="button" class="modal-close" (click)="closeResetPasswordModal()" aria-label="Close">×</button>
+
+      <header class="modal-header">
+        <h1 id="reset-password-title">Reset password</h1>
+      </header>
+
+      <div class="modal-scroll">
+        <div class="user-form">
+          <label class="field">
+            <span>New password</span>
+            <input type="password" [value]="resetPasswordValue()" (input)="onResetPasswordInput($event)" placeholder="At least 8 characters" />
+          </label>
+
+          <p *ngIf="resetPasswordError()" class="form-error">{{ resetPasswordError() }}</p>
+
+          <div class="actions">
+            <app-button type="button" variant="secondary" (click)="closeResetPasswordModal()">Cancel</app-button>
+            <app-button type="button" [disabled]="isResettingPassword()" (click)="confirmResetPassword()">
+              {{ isResettingPassword() ? 'Saving…' : 'Reset password' }}
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

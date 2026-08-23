@@ -12,37 +12,57 @@
     </div>
 
     <nav class="sidebar-nav" aria-label="Sidebar navigation">
-      <a class="nav-item" routerLink="/dashboard" routerLinkActive="active">
+      <a *ngIf="authService.isSuperAdmin()" class="nav-item" routerLink="/superadmin/shops" routerLinkActive="active">
+        <span class="nav-icon" aria-hidden="true">▦</span>
+        <span *ngIf="!isSidebarCollapsed()">All shops</span>
+      </a>
+
+      <a *ngIf="!authService.isSuperAdmin()" class="nav-item" routerLink="/dashboard" routerLinkActive="active">
         <span class="nav-icon" aria-hidden="true">◫</span>
         <span *ngIf="!isSidebarCollapsed()">Overview</span>
       </a>
-      <a class="nav-item" routerLink="/products" routerLinkActive="active">
+      <a *ngIf="!authService.isSuperAdmin()" class="nav-item" routerLink="/products" routerLinkActive="active">
         <span class="nav-icon" aria-hidden="true">◌</span>
         <span *ngIf="!isSidebarCollapsed()">Products</span>
       </a>
-      <a class="nav-item" routerLink="/billing" routerLinkActive="active">
+      <a
+        *ngIf="!authService.isSuperAdmin() && authService.canAccessBilling()"
+        class="nav-item"
+        routerLink="/billing"
+        routerLinkActive="active"
+      >
         <span class="nav-icon" aria-hidden="true">▣</span>
         <span *ngIf="!isSidebarCollapsed()">Billing</span>
       </a>
-      <button class="nav-item" type="button" (click)="toggleSettings()" [attr.aria-expanded]="isSettingsOpen()" aria-controls="settings-navigation">
-        <span class="nav-icon" aria-hidden="true">⚙</span>
-        <span *ngIf="!isSidebarCollapsed()">Settings</span>
-        <span *ngIf="!isSidebarCollapsed()" class="nav-disclosure" aria-hidden="true">{{ isSettingsOpen() ? '⌃' : '⌄' }}</span>
-      </button>
-      <div *ngIf="isSettingsOpen() && !isSidebarCollapsed()" id="settings-navigation" class="nav-children">
-        <a class="nav-child" routerLink="/settings/vendor-details" routerLinkActive="active">
-          <span class="nav-icon" aria-hidden="true">◈</span>
-          View details
-        </a>
-        <a class="nav-child" routerLink="/customers" routerLinkActive="active">
-          <span class="nav-icon" aria-hidden="true">▤</span>
-          Customers
-        </a>
-        <a class="nav-child" routerLink="/settings/invoices" routerLinkActive="active">
-          <span class="nav-icon" aria-hidden="true">▥</span>
-          Billed invoices
-        </a>
-      </div>
+      <ng-container *ngIf="authService.isShopAdmin()">
+        <button class="nav-item" type="button" (click)="toggleSettings()" [attr.aria-expanded]="isSettingsOpen()" aria-controls="settings-navigation">
+          <span class="nav-icon" aria-hidden="true">⚙</span>
+          <span *ngIf="!isSidebarCollapsed()">Settings</span>
+          <span *ngIf="!isSidebarCollapsed()" class="nav-disclosure" aria-hidden="true">{{ isSettingsOpen() ? '⌃' : '⌄' }}</span>
+        </button>
+        <div *ngIf="isSettingsOpen() && !isSidebarCollapsed()" id="settings-navigation" class="nav-children">
+          <a class="nav-child" routerLink="/settings/vendor-details" routerLinkActive="active">
+            <span class="nav-icon" aria-hidden="true">◈</span>
+            View details
+          </a>
+          <a class="nav-child" routerLink="/customers" routerLinkActive="active">
+            <span class="nav-icon" aria-hidden="true">▤</span>
+            Customers
+          </a>
+          <a class="nav-child" routerLink="/settings/invoices" routerLinkActive="active">
+            <span class="nav-icon" aria-hidden="true">▥</span>
+            Billed invoices
+          </a>
+          <a class="nav-child" routerLink="/settings/sales-report" routerLinkActive="active">
+            <span class="nav-icon" aria-hidden="true">◆</span>
+            Sales report
+          </a>
+          <a class="nav-child" routerLink="/settings/users" routerLinkActive="active">
+            <span class="nav-icon" aria-hidden="true">◉</span>
+            Users
+          </a>
+        </div>
+      </ng-container>
       <button class="nav-item nav-button-plain" type="button" (click)="requestLogout()">
         <span class="nav-icon" aria-hidden="true">↩</span>
         <span *ngIf="!isSidebarCollapsed()">Log out</span>

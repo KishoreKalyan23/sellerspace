@@ -33,7 +33,7 @@ public class VendorDashboardController : ControllerBase
 
     private int GetVendorIdFromClaims()
     {
-        var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("VendorId");
+        var claimValue = User.FindFirstValue("VendorId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (int.TryParse(claimValue, out var vendorId))
         {
             return vendorId;

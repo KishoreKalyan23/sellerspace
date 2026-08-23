@@ -29,4 +29,8 @@ public class VendorAuthResultDto
     public decimal? Longitude { get; set; }
 
     public string Token { get; set; } = string.Empty;
+
+    public string Role { get; set; } = "ShopAdmin";
+
+    public bool? CanAccessBilling { get; set; }
 }

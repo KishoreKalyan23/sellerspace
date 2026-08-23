@@ -27,6 +27,14 @@ public class VendorRepository : IVendorRepository
             .FirstOrDefaultAsync(v => v.Email == email);
     }
 
+    public async Task<IReadOnlyList<Vendor>> GetAllAsync()
+    {
+        return await _context.Vendors
+            .AsNoTracking()
+            .OrderBy(v => v.StoreName)
+            .ToListAsync();
+    }
+
     public async Task<Vendor> AddAsync(Vendor vendor)
     {
         if (vendor.CreatedAt == default)

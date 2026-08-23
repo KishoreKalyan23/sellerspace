@@ -25,6 +25,12 @@ public class ECommerceDbContext : DbContext
 
     public DbSet<BillingCustomer> BillingCustomers => Set<BillingCustomer>();
 
+    public DbSet<SuperAdmin> SuperAdmins => Set<SuperAdmin>();
+
+    public DbSet<ShopUser> ShopUsers => Set<ShopUser>();
+
+    public DbSet<UserSettings> UserSettings => Set<UserSettings>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

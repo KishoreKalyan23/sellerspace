@@ -1,0 +1,40 @@
+<section class="shops-page" aria-label="All shops">
+  <app-page-header eyebrow="Super admin" title="All shops" description="Every shop registered on the marketplace." />
+
+  <section class="panel">
+    <div *ngIf="isLoading()" class="loading-state">Loading shops…</div>
+
+    <app-empty-state *ngIf="!isLoading() && shops().length === 0" message="No shops registered yet." />
+
+    <div *ngIf="!isLoading() && shops().length > 0" class="shop-table-wrap">
+      <table class="shop-table">
+        <thead>
+          <tr>
+            <th>Store</th>
+            <th>Owner</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Registered</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let shop of shops()">
+            <td>{{ shop.storeName }}</td>
+            <td>{{ shop.name }}</td>
+            <td>{{ shop.email }}</td>
+            <td>
+              <span class="status-tag" [class.status-tag--approved]="shop.isApproved">
+                {{ shop.isApproved ? 'Approved' : 'Pending' }}
+              </span>
+            </td>
+            <td>{{ shop.createdAt | date: 'mediumDate' }}</td>
+            <td>
+              <a class="link-button" [routerLink]="['/superadmin/shops', shop.vendorId]">View details</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</section>

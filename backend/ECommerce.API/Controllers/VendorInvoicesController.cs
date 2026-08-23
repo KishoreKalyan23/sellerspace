@@ -9,7 +9,7 @@ namespace ECommerce.API.Controllers;
 
 [ApiController]
 [Route("api/vendor/invoices")]
-[Authorize(Roles = "Vendor")]
+[Authorize(Roles = "ShopAdmin")]
 public class VendorInvoicesController : ControllerBase
 {
     private readonly IInvoiceService _invoiceService;
@@ -54,7 +54,7 @@ public class VendorInvoicesController : ControllerBase
 
     private int GetVendorIdFromClaims()
     {
-        var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("VendorId");
+        var claimValue = User.FindFirstValue("VendorId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (int.TryParse(claimValue, out var vendorId))
         {
             return vendorId;

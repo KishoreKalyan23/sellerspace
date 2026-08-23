@@ -6,6 +6,7 @@ import { Product, ProductsService } from '../../shared/services/products/product
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ProductFormComponent } from '../product-form/product-form.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { AuthService } from '../../shared/services/auth/auth.service';
 
 export type ProductCardSize = 'compact' | 'comfortable' | 'large';
 
@@ -23,6 +24,7 @@ export class ProductListComponent implements OnInit {
 
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
+  protected readonly authService = inject(AuthService);
   private readonly apiBaseUrl = 'https://localhost:55142';
 
   readonly isAddModalOpen = signal(false);

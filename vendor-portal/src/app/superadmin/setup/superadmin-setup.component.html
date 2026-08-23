@@ -1,0 +1,38 @@
+<section class="auth-shell" *ngIf="!isChecking()">
+  <div class="auth-card">
+    <div class="auth-header">
+      <p class="eyebrow">One-time setup</p>
+      <h1>Create the super admin account</h1>
+      <p class="subtitle">This screen only works until the first super admin account exists.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <label class="field">
+        <span>Name</span>
+        <input type="text" formControlName="name" placeholder="Your name" />
+      </label>
+
+      <label class="field">
+        <span>Email</span>
+        <input type="email" formControlName="email" placeholder="you@company.com" />
+      </label>
+
+      <label class="field">
+        <span>Password</span>
+        <input type="password" formControlName="password" placeholder="At least 8 characters" />
+      </label>
+
+      <label class="field">
+        <span>Confirm password</span>
+        <input type="password" formControlName="confirmPassword" placeholder="Re-enter password" />
+      </label>
+
+      <p class="inline-error" *ngIf="passwordMismatch">Passwords do not match.</p>
+      <p class="inline-error" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+      <app-button type="submit" class="submit-btn" [disabled]="isSaving()">
+        {{ isSaving() ? 'Creating…' : 'Create super admin' }}
+      </app-button>
+    </form>
+  </div>
+</section>

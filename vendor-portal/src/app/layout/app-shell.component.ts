@@ -13,7 +13,7 @@ import { AuthService } from '../shared/services/auth/auth.service';
   styleUrl: './app-shell.component.css',
 })
 export class AppShellComponent {
-  private readonly authService = inject(AuthService);
+  protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly isSidebarCollapsed = signal(false);

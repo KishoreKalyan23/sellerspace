@@ -36,6 +36,7 @@ public class VendorProductsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "ShopAdmin")]
     public async Task<ActionResult<ApiResponse<ProductDetailDto>>> CreateProduct([FromBody] CreateProductRequestDto request)
     {
         var vendorId = GetVendorIdFromClaims();
@@ -48,6 +49,7 @@ public class VendorProductsController : ControllerBase
     }
 
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "ShopAdmin")]
     public async Task<ActionResult<ApiResponse<ProductDetailDto>>> UpdateProduct(int id, [FromBody] UpdateProductRequestDto request)
     {
         var vendorId = GetVendorIdFromClaims();
@@ -65,6 +67,7 @@ public class VendorProductsController : ControllerBase
     }
 
     [HttpDelete("{id:int}")]
+    [Authorize(Roles = "ShopAdmin")]
     public async Task<ActionResult<ApiResponse<object>>> DeleteProduct(int id)
     {
         var vendorId = GetVendorIdFromClaims();
@@ -82,6 +85,7 @@ public class VendorProductsController : ControllerBase
     }
 
     [HttpPost("{id:int}/image")]
+    [Authorize(Roles = "ShopAdmin")]
     public async Task<ActionResult<ApiResponse<ProductDetailDto>>> UploadProductImages(int id, [FromForm] List<IFormFile> images)
     {
         if (images.Count == 0 || images.Count > 6 || images.Any(image => image.Length == 0 || image.Length > MaximumImageSizeBytes || !AllowedImageTypes.Contains(image.ContentType)))
@@ -131,7 +135,7 @@ public class VendorProductsController : ControllerBase
 
     private int GetVendorIdFromClaims()
     {
-        var claimValue = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("VendorId");
+        var claimValue = User.FindFirstValue("VendorId") ?? User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (int.TryParse(claimValue, out var vendorId))
         {
             return vendorId;

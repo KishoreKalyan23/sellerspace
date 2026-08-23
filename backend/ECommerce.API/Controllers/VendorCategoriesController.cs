@@ -8,7 +8,7 @@ namespace ECommerce.API.Controllers;
 
 [ApiController]
 [Route("api/vendor/categories")]
-[Authorize(Roles = "Vendor")]
+[Authorize(Roles = "ShopAdmin")]
 public class VendorCategoriesController : ControllerBase
 {
     private readonly ICategoryService _categoryService;

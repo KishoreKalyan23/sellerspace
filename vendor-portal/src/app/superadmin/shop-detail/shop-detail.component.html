@@ -1,0 +1,48 @@
+<section class="shop-detail-page" aria-label="Shop details">
+  <app-page-header eyebrow="Super admin" title="Shop report">
+    <a class="link-button" routerLink="/superadmin/shops">← Back to all shops</a>
+  </app-page-header>
+
+  <div *ngIf="isLoading()" class="loading-state">Loading shop report…</div>
+
+  <div *ngIf="!isLoading() && !summary()" class="loading-state">Could not load this shop's report.</div>
+
+  <section class="stat-grid" *ngIf="!isLoading() && summary() as data">
+    <article class="stat-card">
+      <span class="stat-label">Net revenue</span>
+      <strong class="stat-value">₹{{ data.netRevenue }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Orders today</span>
+      <strong class="stat-value">{{ data.ordersToday }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Orders this week</span>
+      <strong class="stat-value">{{ data.ordersThisWeek }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Average order value</span>
+      <strong class="stat-value">₹{{ data.averageOrderValue }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Fulfillment rate</span>
+      <strong class="stat-value">{{ data.fulfillmentRate }}%</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Active listings</span>
+      <strong class="stat-value">{{ data.activeListings }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Low stock listings</span>
+      <strong class="stat-value">{{ data.lowStockListings }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Out of stock listings</span>
+      <strong class="stat-value">{{ data.outOfStockListings }}</strong>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Total clients</span>
+      <strong class="stat-value">{{ data.totalClients }}</strong>
+    </article>
+  </section>
+</section>

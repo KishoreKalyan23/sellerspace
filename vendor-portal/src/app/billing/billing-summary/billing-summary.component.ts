@@ -2,6 +2,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 
 import { BillingService, PaymentMethod } from '../billing.service';
+import { AppConfigService } from '../../shared/services/app-config/app-config.service';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { ProductsService } from '../../shared/services/products/products.service';
@@ -16,7 +17,10 @@ import { ProductsService } from '../../shared/services/products/products.service
 export class BillingSummaryComponent {
   private readonly billingService = inject(BillingService);
   private readonly productsService = inject(ProductsService);
-  private readonly apiBaseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get apiBaseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly billingItems = this.billingService.billingItems;
   readonly subtotal = this.billingService.subtotal;

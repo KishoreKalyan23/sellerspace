@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../app-config/app-config.service';
+
 export type UserRole = 'SuperAdmin' | 'ShopAdmin' | 'ShopUser';
 
 export interface Vendor {
@@ -60,7 +62,10 @@ export interface AuthResult {
 export class AuthService {
   private readonly http = inject(HttpClient);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
   private readonly storageKey = 'vendor-portal.session';
 
   readonly currentVendor = signal<Vendor | null>(null);

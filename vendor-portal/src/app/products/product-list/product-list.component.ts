@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
+import { AppConfigService } from '../../shared/services/app-config/app-config.service';
 import { Product, ProductsService } from '../../shared/services/products/products.service';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ProductFormComponent } from '../product-form/product-form.component';
@@ -25,7 +26,10 @@ export class ProductListComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   protected readonly authService = inject(AuthService);
-  private readonly apiBaseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get apiBaseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly isAddModalOpen = signal(false);
   readonly cardSize = signal<ProductCardSize>('compact');

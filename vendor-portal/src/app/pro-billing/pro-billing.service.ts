@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../shared/services/app-config/app-config.service';
 import { OfflineBillingQueueService } from '../shared/services/offline-billing/offline-billing-queue.service';
 
 export interface ProBillingLineItem {
@@ -52,7 +53,10 @@ interface ApiResponse<T> {
 export class ProBillingService {
   private readonly http = inject(HttpClient);
   private readonly offlineQueue = inject(OfflineBillingQueueService);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   async searchCustomers(query: string): Promise<BillingCustomer[]> {
     if (query.trim().length < 2) {

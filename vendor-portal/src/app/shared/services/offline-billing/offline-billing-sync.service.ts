@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, PLATFORM_ID, effect, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../app-config/app-config.service';
 import { ConnectivityService } from '../connectivity/connectivity.service';
 import { OfflineBillingQueueService, QueuedBill } from './offline-billing-queue.service';
 
@@ -23,7 +24,10 @@ export class OfflineBillingSyncService {
   private readonly platformId = inject(PLATFORM_ID);
   private readonly connectivity = inject(ConnectivityService);
   private readonly queue = inject(OfflineBillingQueueService);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly isSyncing = signal(false);
   readonly syncVersion = signal(0);

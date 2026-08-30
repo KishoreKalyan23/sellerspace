@@ -1,6 +1,7 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 
+import { AppConfigService } from '../../shared/services/app-config/app-config.service';
 import { Product, ProductsService } from '../../shared/services/products/products.service';
 import { BillingService } from '../billing.service';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
@@ -18,7 +19,10 @@ export type CatalogCardSize = 'compact' | 'comfortable' | 'large';
 export class ProductCatalogComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly billingService = inject(BillingService);
-  private readonly apiBaseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get apiBaseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly products = this.productsService.products;
   readonly searchQuery = signal('');

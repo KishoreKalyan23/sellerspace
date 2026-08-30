@@ -3,6 +3,7 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { AppConfigService } from '../../shared/services/app-config/app-config.service';
 import { ProductsService } from '../../shared/services/products/products.service';
 import { CategoriesService } from '../../shared/services/categories/categories.service';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
@@ -20,6 +21,7 @@ export class ProductFormComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
+  private readonly appConfig = inject(AppConfigService);
 
   readonly categories = this.categoriesService.categories;
 
@@ -128,6 +130,6 @@ export class ProductFormComponent implements OnInit {
   }
 
   private toImageUrl(imageUrl: string): string {
-    return imageUrl.startsWith('/') ? `https://localhost:55142${imageUrl}` : imageUrl;
+    return imageUrl.startsWith('/') ? `${this.appConfig.apiBaseUrl}${imageUrl}` : imageUrl;
   }
 }

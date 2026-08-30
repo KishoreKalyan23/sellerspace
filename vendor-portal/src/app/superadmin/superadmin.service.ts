@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../shared/services/app-config/app-config.service';
+
 export interface ShopSummary {
   vendorId: number;
   name: string;
@@ -41,7 +43,10 @@ export interface SuperAdminAuthResult {
 })
 export class SuperAdminService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly shops = signal<ShopSummary[]>([]);
 

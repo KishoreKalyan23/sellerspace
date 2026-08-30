@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../app-config/app-config.service';
+
 interface ApiResponse<T> {
   success: boolean;
   data: T | null;
@@ -17,7 +19,10 @@ interface UserSettings {
 })
 export class UserSettingsService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   async getSettings(): Promise<UserSettings> {
     try {

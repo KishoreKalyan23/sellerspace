@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../app-config/app-config.service';
 import { CategoriesService } from '../categories/categories.service';
 
 export interface Product {
@@ -41,7 +42,10 @@ interface BackendProductItem {
 export class ProductsService {
   private readonly http = inject(HttpClient);
   private readonly categoriesService = inject(CategoriesService);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly products = signal<Product[]>(this.getFallbackProducts());
 

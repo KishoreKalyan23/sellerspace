@@ -2,6 +2,7 @@ import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 
+import { AppConfigService } from '../shared/services/app-config/app-config.service';
 import { EmptyStateComponent } from '../shared/ui/empty-state/empty-state.component';
 
 interface ClientActivity {
@@ -45,6 +46,7 @@ interface DashboardSummaryResponse {
 })
 export class DashboardComponent {
   private readonly http = inject(HttpClient);
+  private readonly appConfig = inject(AppConfigService);
 
   readonly totalClients = signal(0);
   readonly activeListings = signal(0);
@@ -71,7 +73,7 @@ export class DashboardComponent {
   });
 
   constructor() {
-    this.http.get<DashboardSummaryResponse>('https://localhost:55142/api/vendor/dashboard-summary').subscribe({
+    this.http.get<DashboardSummaryResponse>(`${this.appConfig.apiBaseUrl}/api/vendor/dashboard-summary`).subscribe({
       next: (response) => {
         this.applySummary(response.data);
       },

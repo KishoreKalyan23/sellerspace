@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 
+import { AppConfigService } from '../app-config/app-config.service';
+
 export interface Category {
   id: number;
   name: string;
@@ -26,7 +28,10 @@ interface BackendCategoryNode {
 })
 export class CategoriesService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'https://localhost:55142';
+  private readonly appConfig = inject(AppConfigService);
+  private get baseUrl(): string {
+    return this.appConfig.apiBaseUrl;
+  }
 
   readonly categories = signal<Category[]>(this.getFallbackCategories());
 

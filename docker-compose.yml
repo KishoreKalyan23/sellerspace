@@ -1,0 +1,64 @@
+# Build/run everything:      docker compose up -d --build
+# Build one service only:    docker compose build api
+# Run one service only:      docker compose up -d --build api
+# Each Dockerfile also builds standalone without compose, e.g.:
+#   docker build -t ecommerce-api -f backend/Dockerfile backend/
+
+services:
+  # Local/dev-only SQL Server. For a real deployment, point ConnectionStrings__DefaultConnection
+  # at a managed database instead and skip this service (docker compose up api vendor-portal ecommerce-store).
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${DB_PASSWORD:?set DB_PASSWORD in .env}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "${DB_CONNECTION_STRING:-Server=sqlserver;Database=ECommerceDB;User Id=sa;Password=${DB_PASSWORD};TrustServerCertificate=True;}"
+      Jwt__Key: "${JWT_KEY:?set JWT_KEY in .env}"
+      Jwt__Issuer: "${JWT_ISSUER:-https://localhost:5001}"
+      Jwt__Audience: "${JWT_AUDIENCE:-https://localhost:5001}"
+      Cors__AllowedOrigins__0: "${VENDOR_PORTAL_ORIGIN:-http://localhost:4200}"
+      Cors__AllowedOrigins__1: "${ECOMMERCE_STORE_ORIGIN:-http://localhost:4201}"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+
+  vendor-portal:
+    build:
+      context: ./vendor-portal
+      dockerfile: Dockerfile
+    environment:
+      # Angular SSR rejects requests whose Host header isn't in this list (SSRF
+      # protection) — every hostname it will actually be reached by must be listed,
+      # comma-separated, no port, "*" allowed. Defaults to "localhost" for local testing.
+      NG_ALLOWED_HOSTS: "${VENDOR_PORTAL_ALLOWED_HOSTS:-localhost}"
+      # Public URL the *browser* will call — must be reachable from outside the compose
+      # network (not the internal "api" service name), e.g. https://api.your-domain.com.
+      API_BASE_URL: "${API_BASE_URL:-http://localhost:8080}"
+    ports:
+      - "4200:4000"
+    depends_on:
+      - api
+
+  ecommerce-store:
+    build:
+      context: ./ecommerce-store
+      dockerfile: Dockerfile
+    ports:
+      - "4201:80"
+    depends_on:
+      - api
+
+volumes:
+  sqlserver-data:

@@ -1,8 +1,11 @@
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, effect, inject, signal } from '@angular/core';
 
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 import { PageHeaderComponent } from '../../shared/ui/page-header/page-header.component';
+import { ConnectivityService } from '../../shared/services/connectivity/connectivity.service';
+import { OfflineBillingQueueService, QueuedBill } from '../../shared/services/offline-billing/offline-billing-queue.service';
+import { OfflineBillingSyncService } from '../../shared/services/offline-billing/offline-billing-sync.service';
 import { InvoiceDetail, InvoicesService } from '../invoices.service';
 
 @Component({
@@ -14,9 +17,15 @@ import { InvoiceDetail, InvoicesService } from '../invoices.service';
 })
 export class InvoiceListComponent implements OnInit {
   private readonly invoicesService = inject(InvoicesService);
+  private readonly connectivity = inject(ConnectivityService);
+  private readonly queue = inject(OfflineBillingQueueService);
+  private readonly sync = inject(OfflineBillingSyncService);
 
   readonly invoices = this.invoicesService.invoices;
   readonly isLoading = signal(true);
+  readonly isOnline = this.connectivity.isOnline;
+  readonly isSyncing = this.sync.isSyncing;
+  readonly pendingBills = signal<QueuedBill[]>([]);
 
   readonly selectedInvoice = signal<InvoiceDetail | null>(null);
   readonly isDetailLoading = signal(false);
@@ -25,8 +34,25 @@ export class InvoiceListComponent implements OnInit {
   readonly isReturning = signal(false);
   readonly returnError = signal<string | null>(null);
 
+  constructor() {
+    effect(() => {
+      this.sync.syncVersion();
+      this.queue.pendingCount();
+      void this.queue.getAll().then((bills) => this.pendingBills.set(bills));
+      void this.invoicesService.loadAll();
+    });
+  }
+
   ngOnInit(): void {
     void this.invoicesService.loadAll().finally(() => this.isLoading.set(false));
+  }
+
+  retrySync(): void {
+    void this.sync.retryNow();
+  }
+
+  pendingBillCustomerName(bill: QueuedBill): string {
+    return (bill.payload as { clientName?: string }).clientName ?? 'Customer';
   }
 
   async viewInvoice(orderId: number): Promise<void> {

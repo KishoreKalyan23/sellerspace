@@ -1,6 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+
+import { OfflineBillingQueueService } from '../shared/services/offline-billing/offline-billing-queue.service';
 
 export interface BillingItem {
   productId: number;
@@ -15,6 +17,7 @@ export interface CheckoutResult {
   totalAmount: number;
   itemCount: number;
   createdAt: string;
+  isOfflinePending?: boolean;
 }
 
 export type PaymentMethod = 'Cash' | 'Card' | 'UPI';
@@ -36,6 +39,7 @@ interface ApiResponse<T> {
 })
 export class BillingService {
   private readonly http = inject(HttpClient);
+  private readonly offlineQueue = inject(OfflineBillingQueueService);
   private readonly baseUrl = 'https://localhost:55142';
 
   readonly billingItems = signal<BillingItem[]>([]);
@@ -71,10 +75,11 @@ export class BillingService {
   }
 
   async checkout(clientName: string, paymentMethod: PaymentMethod): Promise<CheckoutResult> {
+    const items = this.billingItems();
     const payload: CheckoutRequest = {
       clientName,
       paymentMethod,
-      items: this.billingItems().map((item) => ({ productId: item.productId, quantity: item.quantity })),
+      items: items.map((item) => ({ productId: item.productId, quantity: item.quantity })),
     };
 
     try {
@@ -89,6 +94,19 @@ export class BillingService {
       this.billingItems.set([]);
       return response.data;
     } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 0) {
+        const queued = await this.offlineQueue.enqueue('simple', payload);
+        this.billingItems.set([]);
+        return {
+          orderId: 0,
+          clientName,
+          totalAmount: items.reduce((total, item) => total + item.price * item.quantity, 0),
+          itemCount: items.length,
+          createdAt: queued.createdAt,
+          isOfflinePending: true,
+        };
+      }
+
       const backendMessage = (error as { error?: ApiResponse<CheckoutResult> })?.error?.errors?.[0];
       throw new Error(backendMessage ?? (error instanceof Error ? error.message : 'Checkout failed. Please try again.'));
     }

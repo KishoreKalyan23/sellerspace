@@ -63,7 +63,11 @@ export class BillingSummaryComponent {
 
     try {
       const result = await this.billingService.checkout(this.clientName().trim(), this.paymentMethod());
-      this.checkoutSuccess.set(`Order #${result.orderId} placed for ${result.clientName}.`);
+      this.checkoutSuccess.set(
+        result.isOfflinePending
+          ? `Bill saved offline for ${result.clientName}. It will sync automatically once you're back online.`
+          : `Order #${result.orderId} placed for ${result.clientName}.`,
+      );
       this.clientName.set('');
       this.paymentMethod.set('Cash');
     } catch (error) {

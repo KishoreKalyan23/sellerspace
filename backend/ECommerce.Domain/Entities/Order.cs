@@ -9,6 +9,8 @@ public class Order
 
     public int VendorId { get; set; }
 
+    public string? IdempotencyKey { get; set; }
+
     public required string ClientName { get; set; }
 
     public string Status { get; set; } = "Fulfilled";

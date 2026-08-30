@@ -30,6 +30,7 @@ public class InvoiceService : IInvoiceService
                 TaxAmount = o.TaxAmount,
                 GrandTotal = o.TotalAmount + o.TaxAmount,
                 Status = o.Status,
+                WasCreatedOffline = o.IdempotencyKey != null,
                 CreatedAt = o.CreatedAt
             })
             .ToListAsync(cancellationToken);
@@ -60,6 +61,7 @@ public class InvoiceService : IInvoiceService
             GrandTotal = order.TotalAmount + order.TaxAmount,
             AmountReceived = order.AmountReceived,
             BalanceReturned = order.BalanceReturned,
+            WasCreatedOffline = order.IdempotencyKey != null,
             CreatedAt = order.CreatedAt,
             Items = order.Items.Select(item => new InvoiceLineItemDto
             {

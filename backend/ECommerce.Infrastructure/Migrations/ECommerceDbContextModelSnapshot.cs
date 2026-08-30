@@ -174,6 +174,11 @@ namespace ECommerce.Infrastructure.Migrations
                         .HasColumnType("nvarchar(20)")
                         .HasColumnName("CustomerMobile");
 
+                    b.Property<string>("IdempotencyKey")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("IdempotencyKey");
+
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
@@ -211,6 +216,11 @@ namespace ECommerce.Infrastructure.Migrations
 
                     b.HasIndex("VendorId", "CreatedAt")
                         .HasDatabaseName("IX_Orders_VendorId_CreatedAt");
+
+                    b.HasIndex("VendorId", "IdempotencyKey")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Orders_VendorId_IdempotencyKey")
+                        .HasFilter("[IdempotencyKey] IS NOT NULL");
 
                     b.ToTable("Orders", (string)null);
                 });

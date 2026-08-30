@@ -13,6 +13,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.HasKey(o => o.Id);
         builder.Property(o => o.Id).HasColumnName("OrderId").ValueGeneratedOnAdd();
         builder.Property(o => o.VendorId).HasColumnName("VendorId").IsRequired();
+        builder.Property(o => o.IdempotencyKey).HasColumnName("IdempotencyKey").HasMaxLength(100);
         builder.Property(o => o.ClientName).HasColumnName("ClientName").HasMaxLength(150).IsRequired();
         builder.Property(o => o.Status).HasColumnName("Status").HasMaxLength(30).HasDefaultValue("Fulfilled").IsRequired();
         builder.Property(o => o.TotalAmount).HasColumnName("TotalAmount").HasColumnType("decimal(10,2)").IsRequired();
@@ -26,6 +27,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.HasIndex(o => o.VendorId).HasDatabaseName("IX_Orders_VendorId");
         builder.HasIndex(o => new { o.VendorId, o.CreatedAt }).HasDatabaseName("IX_Orders_VendorId_CreatedAt");
+        builder.HasIndex(o => new { o.VendorId, o.IdempotencyKey })
+            .HasDatabaseName("IX_Orders_VendorId_IdempotencyKey")
+            .IsUnique()
+            .HasFilter("[IdempotencyKey] IS NOT NULL");
 
         builder.HasOne(o => o.Vendor)
             .WithMany()

@@ -1,10 +1,32 @@
 <section class="billing-page" aria-label="Billing workspace">
   <app-page-header eyebrow="Checkout" title="Billing" description="Build a bill from your product catalog and review totals before checkout.">
+    <span class="connectivity-badge" [class.offline]="!isOnline()">
+      <span class="connectivity-badge__dot"></span>
+      {{ isOnline() ? 'Online' : 'Offline' }}
+    </span>
     <button type="button" class="pro-mode-toggle" [class.active]="isProMode()" (click)="toggleProMode()">
       <span class="pro-mode-toggle__track"><span class="pro-mode-toggle__thumb"></span></span>
       Pro mode
     </button>
   </app-page-header>
+
+  <div *ngIf="pendingBills().length > 0" class="offline-queue-banner">
+    <div class="offline-queue-banner__summary">
+      <strong>{{ pendingBills().length }}</strong> bill{{ pendingBills().length === 1 ? '' : 's' }} pending sync
+      <span *ngIf="isSyncing()" class="offline-queue-banner__status">Syncing…</span>
+    </div>
+    <button type="button" class="offline-queue-banner__retry" (click)="retrySync()" [disabled]="!isOnline() || isSyncing()">
+      Retry now
+    </button>
+    <ul class="offline-queue-banner__list">
+      <li *ngFor="let bill of pendingBills()" [class.failed]="bill.status === 'failed'">
+        {{ billCustomerName(bill) }}
+        <span class="offline-queue-banner__item-status">
+          {{ bill.status === 'failed' ? (bill.lastError || 'Needs attention') : bill.status }}
+        </span>
+      </li>
+    </ul>
+  </div>
 
   <div *ngIf="!isProMode()" class="billing-panels">
     <app-billing-summary />

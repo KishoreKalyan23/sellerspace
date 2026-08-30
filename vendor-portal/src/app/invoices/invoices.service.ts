@@ -12,6 +12,7 @@ export interface InvoiceListItem {
   taxAmount: number;
   grandTotal: number;
   status: string;
+  wasCreatedOffline: boolean;
   createdAt: string;
 }
 
@@ -37,6 +38,7 @@ export interface InvoiceDetail {
   grandTotal: number;
   amountReceived: number | null;
   balanceReturned: number | null;
+  wasCreatedOffline: boolean;
   createdAt: string;
   items: InvoiceLineItem[];
 }

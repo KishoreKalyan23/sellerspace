@@ -28,6 +28,19 @@ public class OrderService : IOrderService
             throw new InvalidOperationException("At least one product is required to check out.");
         }
 
+        var idempotencyKey = string.IsNullOrWhiteSpace(request.IdempotencyKey) ? null : request.IdempotencyKey.Trim();
+        if (idempotencyKey is not null)
+        {
+            var existingOrder = await _context.Orders
+                .Include(o => o.Items)
+                .FirstOrDefaultAsync(o => o.VendorId == vendorId && o.IdempotencyKey == idempotencyKey, cancellationToken);
+
+            if (existingOrder is not null)
+            {
+                return ToOrderSummaryDto(existingOrder);
+            }
+        }
+
         var productIds = request.Items.Select(item => item.ProductId).Distinct().ToList();
         var products = await _context.Products
             .Where(p => p.VendorId == vendorId && productIds.Contains(p.Id))
@@ -46,6 +59,7 @@ public class OrderService : IOrderService
         var order = new Order
         {
             VendorId = vendorId,
+            IdempotencyKey = idempotencyKey,
             ClientName = clientName,
             CustomerMobile = customerMobile,
             CustomerEmail = customerEmail,
@@ -113,20 +127,7 @@ public class OrderService : IOrderService
 
         await _context.SaveChangesAsync(cancellationToken);
 
-        return new OrderSummaryDto
-        {
-            OrderId = order.Id,
-            ClientName = order.ClientName,
-            TotalAmount = order.TotalAmount,
-            TaxAmount = order.TaxAmount,
-            GrandTotal = grandTotal,
-            AmountReceived = order.AmountReceived,
-            BalanceReturned = order.BalanceReturned,
-            PaymentMethod = order.PaymentMethod,
-            Status = order.Status,
-            ItemCount = order.Items.Count,
-            CreatedAt = order.CreatedAt
-        };
+        return ToOrderSummaryDto(order);
     }
 
     public async Task<OrderSummaryDto> ReturnOrderAsync(int vendorId, int orderId, CancellationToken cancellationToken = default)
@@ -159,6 +160,11 @@ public class OrderService : IOrderService
         order.Status = "Returned";
         await _context.SaveChangesAsync(cancellationToken);
 
+        return ToOrderSummaryDto(order);
+    }
+
+    private static OrderSummaryDto ToOrderSummaryDto(Order order)
+    {
         return new OrderSummaryDto
         {
             OrderId = order.Id,

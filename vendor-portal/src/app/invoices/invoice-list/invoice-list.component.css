@@ -79,6 +79,68 @@
   color: var(--color-error);
 }
 
+.status-tag--offline {
+  margin-left: 0.35rem;
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+}
+
+.connectivity-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--border-subtle);
+  background: var(--color-surface);
+}
+
+.connectivity-badge__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: #2fa84f;
+}
+
+.connectivity-badge.offline {
+  color: #b3541e;
+  border-color: #e8b98a;
+}
+
+.connectivity-badge.offline .connectivity-badge__dot {
+  background: #d97706;
+}
+
+.pending-panel {
+  border-color: #e8b98a;
+  background: #fff7ed;
+}
+
+.pending-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pending-panel__header h2 {
+  font-size: 0.95rem;
+  color: #7c4a12;
+  margin: 0;
+}
+
+.pending-panel__syncing {
+  font-size: 0.78rem;
+  color: #7c4a12;
+}
+
+.pending-panel__header .view-button {
+  margin-left: auto;
+}
+
 .row-actions {
   display: flex;
   gap: 0.4rem;

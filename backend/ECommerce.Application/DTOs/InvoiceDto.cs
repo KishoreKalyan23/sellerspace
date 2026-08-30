@@ -20,6 +20,8 @@ public class InvoiceListItemDto
 
     public string Status { get; set; } = string.Empty;
 
+    public bool WasCreatedOffline { get; set; }
+
     public DateTime CreatedAt { get; set; }
 }
 
@@ -46,6 +48,8 @@ public class InvoiceDetailDto
     public decimal? AmountReceived { get; set; }
 
     public decimal? BalanceReturned { get; set; }
+
+    public bool WasCreatedOffline { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

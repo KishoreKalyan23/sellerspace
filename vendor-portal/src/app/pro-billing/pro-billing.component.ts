@@ -280,8 +280,12 @@ export class ProBillingComponent implements OnInit {
         })),
       });
 
-      const balanceLabel = result.balanceReturned && result.balanceReturned > 0 ? ` Balance returned: ${result.balanceReturned.toFixed(2)}.` : '';
-      this.checkoutSuccess.set(`Order #${result.orderId} placed for ${result.clientName}.${balanceLabel}`);
+      if (result.isOfflinePending) {
+        this.checkoutSuccess.set(`Bill saved offline for ${result.clientName}. It will sync automatically once you're back online.`);
+      } else {
+        const balanceLabel = result.balanceReturned && result.balanceReturned > 0 ? ` Balance returned: ${result.balanceReturned.toFixed(2)}.` : '';
+        this.checkoutSuccess.set(`Order #${result.orderId} placed for ${result.clientName}.${balanceLabel}`);
+      }
 
       this.lineItems.set([]);
       this.customerName.set('');

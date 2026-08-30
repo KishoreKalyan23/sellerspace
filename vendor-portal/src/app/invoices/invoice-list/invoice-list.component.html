@@ -1,6 +1,43 @@
 <section class="invoices-page" aria-label="Billed invoices">
   <app-page-header eyebrow="Settings" title="Billed invoices" description="Every bill you've completed, with full line-item detail.">
+    <span class="connectivity-badge" [class.offline]="!isOnline()">
+      <span class="connectivity-badge__dot"></span>
+      {{ isOnline() ? 'Online' : 'Offline' }}
+    </span>
   </app-page-header>
+
+  <section *ngIf="pendingBills().length > 0" class="panel pending-panel">
+    <div class="pending-panel__header">
+      <h2>Bills awaiting sync</h2>
+      <span *ngIf="isSyncing()" class="pending-panel__syncing">Syncing…</span>
+      <button type="button" class="view-button" (click)="retrySync()" [disabled]="!isOnline() || isSyncing()">
+        Retry now
+      </button>
+    </div>
+    <table class="invoice-table">
+      <thead>
+        <tr>
+          <th>Customer</th>
+          <th>Queued at</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let bill of pendingBills()">
+          <td>{{ pendingBillCustomerName(bill) }}</td>
+          <td>{{ bill.createdAt | date:'d MMM y, h:mm a' }}</td>
+          <td>
+            <span
+              class="status-tag status-tag--offline"
+              [class.status-tag--returned]="bill.status === 'failed'"
+            >
+              {{ bill.status === 'failed' ? (bill.lastError || 'Needs attention') : 'Pending sync' }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 
   <section class="panel">
     <div *ngIf="isLoading()" class="loading-state">Loading invoices…</div>
@@ -42,6 +79,9 @@
                 [class.status-tag--returned]="invoice.status === 'Returned'"
               >
                 {{ invoice.status }}
+              </span>
+              <span *ngIf="invoice.wasCreatedOffline" class="status-tag status-tag--offline" title="Created while offline, synced automatically">
+                Synced from offline
               </span>
             </td>
             <td>{{ invoice.createdAt | date:'d MMM y, h:mm a' }}</td>
@@ -94,6 +134,7 @@
             <div>
               <span class="label">Status</span>
               <strong>{{ invoice.status }}</strong>
+              <small *ngIf="invoice.wasCreatedOffline">Synced from offline</small>
             </div>
           </div>
 

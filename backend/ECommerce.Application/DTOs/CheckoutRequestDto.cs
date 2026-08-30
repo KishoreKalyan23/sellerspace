@@ -2,6 +2,8 @@ namespace ECommerce.Application.DTOs;
 
 public class CheckoutRequestDto
 {
+    public string? IdempotencyKey { get; set; }
+
     public string ClientName { get; set; } = string.Empty;
 
     public string? CustomerMobile { get; set; }

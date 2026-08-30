@@ -1,6 +1,8 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+
+import { OfflineBillingQueueService } from '../shared/services/offline-billing/offline-billing-queue.service';
 
 export interface ProBillingLineItem {
   productId: number;
@@ -28,6 +30,7 @@ export interface ProBillingCheckoutResult {
   balanceReturned: number | null;
   itemCount: number;
   createdAt: string;
+  isOfflinePending?: boolean;
 }
 
 export interface BillingCustomer {
@@ -48,6 +51,7 @@ interface ApiResponse<T> {
 })
 export class ProBillingService {
   private readonly http = inject(HttpClient);
+  private readonly offlineQueue = inject(OfflineBillingQueueService);
   private readonly baseUrl = 'https://localhost:55142';
 
   async searchCustomers(query: string): Promise<BillingCustomer[]> {
@@ -79,6 +83,22 @@ export class ProBillingService {
 
       return response.data;
     } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 0) {
+        const queued = await this.offlineQueue.enqueue('pro', payload);
+        return {
+          orderId: 0,
+          clientName: payload.clientName,
+          totalAmount: 0,
+          taxAmount: 0,
+          grandTotal: 0,
+          amountReceived: payload.amountReceived ?? null,
+          balanceReturned: null,
+          itemCount: payload.items.length,
+          createdAt: queued.createdAt,
+          isOfflinePending: true,
+        };
+      }
+
       const backendMessage = (error as { error?: ApiResponse<ProBillingCheckoutResult> })?.error?.errors?.[0];
       throw new Error(backendMessage ?? (error instanceof Error ? error.message : 'Checkout failed. Please try again.'));
     }

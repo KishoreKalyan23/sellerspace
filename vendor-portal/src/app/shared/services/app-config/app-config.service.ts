@@ -1,7 +1,6 @@
 import { isPlatformServer } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject } from '@angular/core';
-
-const DEFAULT_API_BASE_URL = 'https://localhost:55142';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -9,22 +8,24 @@ const DEFAULT_API_BASE_URL = 'https://localhost:55142';
 export class AppConfigService {
   private readonly platformId = inject(PLATFORM_ID);
 
-  apiBaseUrl = DEFAULT_API_BASE_URL;
+  // Build-time default from src/environments; optionally overridden at runtime below.
+  apiBaseUrl = environment.apiBaseUrl;
 
   async load(): Promise<void> {
     if (isPlatformServer(this.platformId)) {
-      this.apiBaseUrl = process.env['API_BASE_URL'] || DEFAULT_API_BASE_URL;
+      this.apiBaseUrl = process.env['API_BASE_URL'] || environment.apiBaseUrl;
       return;
     }
 
     try {
+      // Written by docker-entrypoint.sh from $API_BASE_URL; an empty {} keeps the environment value.
       const response = await fetch('/app-config.json');
       const config = (await response.json()) as { apiBaseUrl?: string };
       if (config.apiBaseUrl) {
         this.apiBaseUrl = config.apiBaseUrl;
       }
     } catch {
-      // Keep the default so the app still runs (e.g. plain `ng serve` with no config file).
+      // Keep the environment value so the app still runs without a config file.
     }
   }
 }

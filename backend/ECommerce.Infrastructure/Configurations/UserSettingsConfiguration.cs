@@ -15,7 +15,7 @@ public class UserSettingsConfiguration : IEntityTypeConfiguration<UserSettings>
         builder.Property(s => s.UserId).HasColumnName("UserId").IsRequired();
         builder.Property(s => s.UserType).HasColumnName("UserType").HasMaxLength(20).IsRequired();
         builder.Property(s => s.UseProBilling).HasColumnName("UseProBilling").IsRequired().HasDefaultValue(false);
-        builder.Property(s => s.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(s => s.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("now()").IsRequired();
         builder.Property(s => s.UpdatedAt).HasColumnName("UpdatedAt");
 
         // No FK to Vendors/ShopUsers: UserId is polymorphic (a Vendor or a ShopUser id,

@@ -13,9 +13,9 @@ public class SuperAdminConfiguration : IEntityTypeConfiguration<SuperAdmin>
         builder.HasKey(s => s.Id);
         builder.Property(s => s.Id).HasColumnName("SuperAdminId").ValueGeneratedOnAdd();
         builder.Property(s => s.Name).HasColumnName("Name").HasMaxLength(100).IsRequired();
-        builder.Property(s => s.Email).HasColumnName("Email").HasMaxLength(150).IsRequired();
+        builder.Property(s => s.Email).HasColumnName("Email").HasColumnType("citext").HasMaxLength(150).IsRequired();
         builder.Property(s => s.PasswordHash).HasColumnName("PasswordHash").HasMaxLength(256).IsRequired();
-        builder.Property(s => s.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(s => s.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("now()").IsRequired();
 
         builder.HasIndex(s => s.Email).IsUnique().HasDatabaseName("IX_SuperAdmins_Email");
     }

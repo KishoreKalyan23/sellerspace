@@ -21,7 +21,7 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Stock).HasColumnName("Stock").HasDefaultValue(0).IsRequired();
         builder.Property(p => p.ImageUrl).HasColumnName("ImageUrl").HasMaxLength(500);
         builder.Property(p => p.IsActive).HasColumnName("IsActive").HasDefaultValue(true).IsRequired();
-        builder.Property(p => p.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(p => p.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("now()").IsRequired();
         builder.Property(p => p.UpdatedAt).HasColumnName("UpdatedAt");
 
         builder.HasIndex(p => p.CategoryId).HasDatabaseName("IX_Products_CategoryId");

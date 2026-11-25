@@ -35,6 +35,9 @@ public class ECommerceDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        // Email/LoginId columns use citext so lookups and unique indexes stay case-insensitive.
+        modelBuilder.HasPostgresExtension("citext");
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ECommerceDbContext).Assembly);
     }
 }

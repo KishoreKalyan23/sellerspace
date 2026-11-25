@@ -62,8 +62,8 @@ public class ProductRepository : IProductRepository
 
         if (!string.IsNullOrWhiteSpace(query.SearchTerm))
         {
-            var term = query.SearchTerm.Trim();
-            productsQuery = productsQuery.Where(p => p.Name.Contains(term) || (p.Description != null && p.Description.Contains(term)));
+            var pattern = $"%{LikePattern.Escape(query.SearchTerm.Trim())}%";
+            productsQuery = productsQuery.Where(p => EF.Functions.ILike(p.Name, pattern, LikePattern.EscapeCharacter) || (p.Description != null && EF.Functions.ILike(p.Description, pattern, LikePattern.EscapeCharacter)));
         }
 
         if (query.MinPrice.HasValue)

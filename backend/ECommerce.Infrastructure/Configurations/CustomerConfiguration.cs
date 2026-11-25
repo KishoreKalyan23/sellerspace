@@ -13,8 +13,8 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Id).HasColumnName("CustomerId").ValueGeneratedOnAdd();
         builder.Property(c => c.Name).HasColumnName("Name").HasMaxLength(100).IsRequired();
-        builder.Property(c => c.Email).HasColumnName("Email").HasMaxLength(150).IsRequired();
+        builder.Property(c => c.Email).HasColumnName("Email").HasColumnType("citext").HasMaxLength(150).IsRequired();
         builder.Property(c => c.PasswordHash).HasColumnName("PasswordHash").HasMaxLength(256).IsRequired();
-        builder.Property(c => c.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(c => c.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("now()").IsRequired();
     }
 }

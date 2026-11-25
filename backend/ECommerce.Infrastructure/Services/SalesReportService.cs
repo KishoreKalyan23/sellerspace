@@ -15,8 +15,9 @@ public class SalesReportService : ISalesReportService
 
     public async Task<SalesReportDto> GetReportAsync(int vendorId, DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
     {
-        var rangeStart = startDate.Date;
-        var rangeEndExclusive = endDate.Date.AddDays(1);
+        // Npgsql only accepts UTC DateTimes against timestamptz columns; query-string dates arrive as Unspecified.
+        var rangeStart = DateTime.SpecifyKind(startDate.Date, DateTimeKind.Utc);
+        var rangeEndExclusive = rangeStart.AddDays((endDate.Date - startDate.Date).Days + 1);
 
         var orders = await _context.Orders
             .AsNoTracking()
@@ -40,7 +41,7 @@ public class SalesReportService : ISalesReportService
 
         return new SalesReportDto
         {
-            StartDate = rangeStart,
+            StartDate = startDate.Date,
             EndDate = endDate.Date,
             TotalSales = fulfilled.Sum(o => o.TotalAmount + o.TaxAmount),
             TotalOrders = fulfilled.Count,

@@ -16,7 +16,7 @@ public class BillingCustomerConfiguration : IEntityTypeConfiguration<BillingCust
         builder.Property(c => c.Name).HasColumnName("Name").HasMaxLength(150).IsRequired();
         builder.Property(c => c.Mobile).HasColumnName("Mobile").HasMaxLength(20).IsRequired();
         builder.Property(c => c.Email).HasColumnName("Email").HasMaxLength(150);
-        builder.Property(c => c.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(c => c.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("now()").IsRequired();
         builder.Property(c => c.UpdatedAt).HasColumnName("UpdatedAt");
 
         builder.HasIndex(c => new { c.VendorId, c.Mobile }).IsUnique().HasDatabaseName("IX_BillingCustomers_VendorId_Mobile");

@@ -23,14 +23,14 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.AmountReceived).HasColumnName("AmountReceived").HasColumnType("decimal(10,2)");
         builder.Property(o => o.BalanceReturned).HasColumnName("BalanceReturned").HasColumnType("decimal(10,2)");
         builder.Property(o => o.PaymentMethod).HasColumnName("PaymentMethod").HasMaxLength(20).HasDefaultValue("Cash").IsRequired();
-        builder.Property(o => o.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(o => o.CreatedAt).HasColumnName("CreatedAt").HasDefaultValueSql("now()").IsRequired();
 
         builder.HasIndex(o => o.VendorId).HasDatabaseName("IX_Orders_VendorId");
         builder.HasIndex(o => new { o.VendorId, o.CreatedAt }).HasDatabaseName("IX_Orders_VendorId_CreatedAt");
         builder.HasIndex(o => new { o.VendorId, o.IdempotencyKey })
             .HasDatabaseName("IX_Orders_VendorId_IdempotencyKey")
             .IsUnique()
-            .HasFilter("[IdempotencyKey] IS NOT NULL");
+            .HasFilter("\"IdempotencyKey\" IS NOT NULL");
 
         builder.HasOne(o => o.Vendor)
             .WithMany()

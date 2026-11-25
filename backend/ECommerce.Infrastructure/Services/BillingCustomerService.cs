@@ -81,10 +81,12 @@ public class BillingCustomerService : IBillingCustomerService
             return Array.Empty<BillingCustomerDto>();
         }
 
+        var pattern = $"%{LikePattern.Escape(term)}%";
+
         return await _context.BillingCustomers
             .AsNoTracking()
             .Where(c => c.VendorId == vendorId
-                && (c.Mobile.Contains(term) || c.Name.Contains(term) || (c.Email != null && c.Email.Contains(term))))
+                && (EF.Functions.ILike(c.Mobile, pattern, LikePattern.EscapeCharacter) || EF.Functions.ILike(c.Name, pattern, LikePattern.EscapeCharacter) || (c.Email != null && EF.Functions.ILike(c.Email, pattern, LikePattern.EscapeCharacter))))
             .OrderByDescending(c => c.UpdatedAt ?? c.CreatedAt)
             .Take(5)
             .Select(c => new BillingCustomerDto

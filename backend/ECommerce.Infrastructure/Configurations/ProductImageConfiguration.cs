@@ -15,7 +15,7 @@ public class ProductImageConfiguration : IEntityTypeConfiguration<ProductImage>
         builder.Property(image => image.ProductId).IsRequired();
         builder.Property(image => image.ImageUrl).HasMaxLength(500).IsRequired();
         builder.Property(image => image.SortOrder).IsRequired();
-        builder.Property(image => image.CreatedAt).HasDefaultValueSql("SYSUTCDATETIME()").IsRequired();
+        builder.Property(image => image.CreatedAt).HasDefaultValueSql("now()").IsRequired();
 
         builder.HasIndex(image => new { image.ProductId, image.SortOrder });
         builder.HasOne(image => image.Product)

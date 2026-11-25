@@ -45,7 +45,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 builder.Services.AddDbContext<ECommerceDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -102,13 +102,15 @@ var app = builder.Build();
 using (var startupScope = app.Services.CreateScope())
 {
     var dbContext = startupScope.ServiceProvider.GetRequiredService<ECommerceDbContext>();
+    await dbContext.Database.MigrateAsync();
+
     try
     {
         await ECommerce.Infrastructure.Seeding.OrderSeeder.SeedAsync(dbContext);
     }
     catch (Exception ex)
     {
-        app.Logger.LogWarning(ex, "Skipped order seeding - run 'dotnet ef database update' to create the Orders/OrderItems tables.");
+        app.Logger.LogWarning(ex, "Skipped order seeding.");
     }
 }
 
